@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")                      # la chiave sta solo in .env (mai nel git)
 
 DATA_DIR = ROOT / "data"
+AUDIT_PATH = ROOT / "logs" / "audit.jsonl"      # registro di cosa decide il tutor (cartella ignorata da git)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 # Come in tutto il corso: gpt-4o-mini per le risposte, text-embedding-3-small per gli embedding (1536 numeri per testo)

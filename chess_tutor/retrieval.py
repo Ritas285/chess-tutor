@@ -84,12 +84,13 @@ class Ricerca:
         return [self.chunks[i] for i in ordine[:k]]
 
 
-def crea_ricerche(embedder, rami=None, vs=None) -> dict[str, Ricerca]:
-    """Indicizza i rami (tutti, se non se ne indicano) e restituisce una Ricerca per ramo: {"rules": ..., "openings": ...}."""
+def crea_ricerche(embedder, rami=None, vs=None, data_dir=None) -> dict[str, Ricerca]:
+    """Indicizza i rami (tutti, se non se ne indicano) e restituisce una Ricerca per ramo: {"rules": ..., "openings": ...}.
+    `data_dir` serve ai test, per indicizzare una cartella diversa da data/ (es. con un documento "avvelenato")."""
     vs = vs or ingest.crea_vector_store()
     ricerche = {}
     for ramo in rami or config.BRANCHES:
-        ingest.indicizza_ramo(vs, embedder, ramo, verbose=False)
+        ingest.indicizza_ramo(vs, embedder, ramo, data_dir=data_dir, verbose=False)
         ricerche[ramo] = Ricerca(vs, embedder, ramo)
     return ricerche
 
