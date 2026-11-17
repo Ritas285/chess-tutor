@@ -20,7 +20,7 @@ from pathlib import Path
 from datapizza.agents.agent import Agent
 from datapizza.agents.runner import AgentRunner
 from datapizza.tools import Tool
-from datapizza.type import FunctionCallBlock
+from datapizza.type import FunctionCallBlock, FunctionCallResultBlock
 
 from . import audit, config, guardrails, ingest, observability, retrieval
 from . import otel_phoenix_bridge as ponte
@@ -65,6 +65,7 @@ class Risposta:
     fonti: list[str] = field(default_factory=list)
     tool_usati: list[str] = field(default_factory=list)
     note: list[str] = field(default_factory=list)     # cosa hanno fatto i guardrail (es. "injection_neutralizzata")
+    contesto: list[str] = field(default_factory=list)  # i passaggi che il modello ha DAVVERO letto (servono al giudice di faithfulness)
     token_prompt: int = 0
     token_completati: int = 0
     latenza_s: float = 0.0
@@ -116,6 +117,11 @@ def crea_tool_ricerca(ricerca: Ricerca, ramo: str, fonti: list[str], k: int = 3,
 
 def _tool_usati(memoria) -> list[str]:
     return [blocco.name for turno in list(memoria.memory) for blocco in turno if isinstance(blocco, FunctionCallBlock)]
+
+
+def _contesto(memoria) -> list[str]:
+    """Il testo restituito dagli strumenti (già sanificato): è ciò che il modello ha letto per rispondere."""
+    return [str(blocco.result) for turno in list(memoria.memory) for blocco in turno if isinstance(blocco, FunctionCallResultBlock)]
 
 
 class Tutor:
@@ -188,6 +194,7 @@ class Tutor:
         return Risposta(
             testo=testo, rami=decisione.rami, ripiego_router=decisione.ripiego,
             fonti=list(dict.fromkeys(fonti)), tool_usati=_tool_usati(risultato.memory), note=note,
+            contesto=_contesto(risultato.memory),
             token_prompt=decisione.token_prompt + int(uso.prompt_tokens),
             token_completati=decisione.token_completati + int(uso.completion_tokens),
         )

@@ -33,6 +33,7 @@ ESEMPI = (
     "- \"Chi era Garry Kasparov?\" -> about_chess=true (storia degli scacchi), ramo più vicino\n"
     "- \"Quando sono nati gli scacchi?\" -> about_chess=true (storia degli scacchi), ramo più vicino\n"
     "- \"Chi ha vinto il Mondiale di calcio?\" -> about_chess=false\n"
+    "- \"Cosa significa Cxe5?\" -> about_chess=true (notazione degli scacchi: mosse e simboli senza la parola \"scacchi\"), ramo più vicino\n"
     "- \"Mi dai una ricetta per la pizza?\" -> about_chess=false"
 )
 
