@@ -7,6 +7,7 @@ elenca tool, resource e prompt e li usa. Stesso schema di Lezione13/mcp_consume_
 Serve OPENAI_API_KEY nel file .env (la ricerca e la verifica usano il modello; l'elenco dei tool no).
 """
 import asyncio
+import re
 import sys
 from pathlib import Path
 
@@ -32,6 +33,17 @@ async def main() -> None:
 
         doc = await client.read_resource("corpus://rules/01_pezzi_e_movimenti.md")
         print("\nresource corpus://rules/01_pezzi_e_movimenti.md:\n" + doc.contents[0].text[:120] + " …")
+
+        # Il quiz (Step 2b): il "documento allegato in chat" è una dispensa sulle tattiche che il tutor NON ha nei suoi rami.
+        dispensa = (RADICE / "examples" / "dispensa_tattiche.md").read_text(encoding="utf-8")
+        r = await client.call_tool("genera_quiz", {"testo": dispensa, "n": 3})
+        quiz = r.content[0].text
+        print("\ngenera_quiz(dispensa_tattiche.md, n=3):\n" + quiz)
+        match = re.search(r"Quiz ([0-9a-f]{6})", quiz)
+        if match:
+            for numero, risposta in ((1, "A"), (2, "Non lo so")):
+                r = await client.call_tool("verifica_quiz", {"quiz_id": match.group(1), "numero": numero, "risposta": risposta})
+                print(f"\nverifica_quiz(domanda {numero}, {risposta!r}):\n  -> {r.content[0].text}")
 
 
 if __name__ == "__main__":

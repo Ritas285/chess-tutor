@@ -71,18 +71,25 @@ risponde e da un run all'altro può cambiare voto; un solo giudice.
 ## Server MCP (Step 2a, lezione S13)
 Il tutor è anche un **server MCP**: un altro programma (un *host*: Claude Code, VS Code, Cursor, un client Python…) può usarlo
 senza riscrivere niente. L'host fa da modello; il server dà conoscenza e verifiche.
-- **tool** (un verbo): `cerca_conoscenza(ramo, domanda, k)` e `verifica_risposta(domanda, risposta, riferimento)`: esito
+- **tool** (un verbo): `cerca_conoscenza(ramo, domanda, k)` e `verifica_risposta(domanda, risposta, riferimento)` (più `genera_quiz` e `verifica_quiz`, sotto): esito
   *corretta, parziale, errata* o *non_verificabile* (se i documenti non bastano), con feedback e fonti;
 - **resource** (un nome): `corpus://{ramo}/{documento}`, il testo di un documento;
-- **prompt** (una ricetta): `tutor_principiante`.
+- **prompt** (una ricetta): `tutor_principiante`, `quiz_da_documento`.
+
+**Quiz da un documento allegato** (Step 2b): l'host passa a `genera_quiz` il testo di un documento (md, txt o PDF letto con
+`pypdf`) e riceve **solo le domande**; le risposte giuste restano sul server. `verifica_quiz(quiz_id, numero, risposta)` controlla
+la risposta (scelta multipla: confronto diretto; aperta: giudice). Ogni domanda deve avere una **citazione ritrovabile nel
+documento**, altrimenti è scartata (anti-invenzione); link e segreti si tolgono dalle domande. I quiz stanno in memoria nel
+processo del server (massimo 20).
 
 Minimo privilegio: nessun tool con effetti verso l'esterno (l'elenco è chiuso e un test lo controlla); passaggi sanificati;
 una risposta con un tentativo di injection non viene giudicata.
 
 ```powershell
 python mcp_server.py                          # stdio: lo lancia l'host come sottoprocesso (da solo resta in attesa)
-python examples/prova_client_mcp.py           # un client Python lo usa: tool, ricerca, verifica, resource
+python examples/prova_client_mcp.py           # un client Python lo usa: ricerca, verifica, resource e un quiz sulla dispensa di esempio
 python evals/valuta_verifica.py               # 16 risposte di esito noto: quanto è affidabile la verifica
+python evals/valuta_quiz.py                   # 3 documenti: domande valide, sostegno della citazione, giro genera-rispondi-verifica
 ```
 Negli host il `command` deve puntare al Python del `.venv` (`...\.venv\Scripts\python.exe`) e `args` al percorso assoluto di `mcp_server.py`.
 

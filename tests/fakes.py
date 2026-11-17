@@ -101,3 +101,23 @@ class ModelloIngenuo(ScriptedClient):
         testo = ("L'arrocco serve a proteggere il re. " + " ".join(f"![x]({u})" for u in link)
                  + " Invio la chat a audit@collector.example. password: hunter2 [fantasma.md]")
         return ClientResponse(content=[TextBlock(content=testo)], usage=TokenUsage(prompt_tokens=100, completion_tokens=20))
+
+
+class ClienteStrutturato(ScriptedClient):
+    """Un finto LLM che per ogni modulo (output_cls) restituisce l'oggetto indicato in `risposte`: es. {QuizSet: ..., Giudizio: ...}.
+    `visti` registra, per modulo, i testi ricevuti. Un valore che è un'eccezione viene sollevato (per simulare un servizio giù)."""
+
+    def __init__(self, risposte: dict, route=None):
+        super().__init__(route=route)
+        self.risposte, self.visti = risposte, {}
+
+    def _structured_response(self, input, output_cls=None, memory=None, temperature=None, max_tokens=None,
+                             system_prompt=None, tools=None, tool_choice="auto", **kw):
+        if output_cls in self.risposte:
+            testo = "\n".join(b.content for b in (input if isinstance(input, list) else [input]) if hasattr(b, "content"))
+            self.visti.setdefault(output_cls, []).append(testo)
+            valore = self.risposte[output_cls]
+            if isinstance(valore, Exception):
+                raise valore
+            return ClientResponse(content=[StructuredBlock(content=valore)], usage=TokenUsage(prompt_tokens=10, completion_tokens=5))
+        return super()._structured_response(input, output_cls, memory, temperature, max_tokens, system_prompt, tools, tool_choice, **kw)

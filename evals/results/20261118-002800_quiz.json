@@ -1,0 +1,174 @@
+{
+ "modo": "quiz",
+ "etichetta": "",
+ "modello": "gpt-4o-mini",
+ "riassunto": {
+  "n_domande": 17,
+  "n": {},
+  "errori": {
+   "sostegno_basso": [],
+   "errori_gravi": []
+  },
+  "misure": {
+   "quiz_valide": 0.9444,
+   "quiz_sostegno": 1.0,
+   "quiz_giuste_riconosciute": 1.0,
+   "quiz_sbagliate_respinte": 1.0
+  }
+ },
+ "righe": [
+  {
+   "id": "dispensa_tattiche.md#1",
+   "tipo": "aperta",
+   "domanda": "Che cos'è una tattica negli scacchi?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione ripete esattamente la definizione di tattica fornita dalla risposta giusta, supportandola pienamente.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#2",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è il pezzo più adatto a fare forchette?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma direttamente che il cavallo è il pezzo più adatto a fare forchette, supportando chiaramente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#3",
+   "tipo": "aperta",
+   "domanda": "Cosa si intende per inchiodatura assoluta?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione esplica direttamente il concetto di inchiodatura assoluta e specifica che il pezzo non può muoversi perché proteggerebbe il re. Pertanto, afferma chiaramente che in questa situazione il pezzo è costretto a rimanere in posizione.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#4",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è la caratteristica principale di un'infilata?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione descrive chiaramente il concetto di infiltrata, evidenziando come un pezzo prezioso venga attaccato e lasci scoperto un altro pezzo di valore minore. Questo supporta direttamente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#5",
+   "tipo": "aperta",
+   "domanda": "Quali pezzi possono essere utilizzati per fare inchiodature?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma esplicitamente che le inchiodature si fanno con alfieri, torri e donna, confermando così la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#6",
+   "tipo": "aperta",
+   "domanda": "Quali domande è utile porsi prima di ogni mossa per cercare tattiche?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione riproduce esattamente le domande che compongono la risposta giusta, supportando chiaramente la necessità di porle prima di ogni mossa.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "03_mosse_speciali.md#1",
+   "tipo": "aperta",
+   "domanda": "Cos'è l'arrocco nel gioco degli scacchi?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione fornisce una definizione esatta e dettagliata dell'arrocco, corrispondente direttamente alla risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "parziale"
+  },
+  {
+   "id": "03_mosse_speciali.md#2",
+   "tipo": "aperta",
+   "domanda": "Quali sono le condizioni per effettuare l'arrocco?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione fornisce tutti i requisiti necessari per effettuare l'arrocco, specificando chiaramente le stesse condizioni indicate nella risposta giusta. ",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "03_mosse_speciali.md#3",
+   "tipo": "scelta_multipla",
+   "domanda": "Cosa succede alla torre durante l'arrocco corto?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma chiaramente che durante l'arrocco corto il re si sposta in g1 e la torre in f1, sostenendo direttamente la risposta data.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "03_mosse_speciali.md#4",
+   "tipo": "aperta",
+   "domanda": "Qual è la caratteristica principale della presa en passant?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione descrive esattamente il meccanismo della presa en passant, confermando che si può catturare un pedone avversario avanzato di due case se è affiancato al proprio pedone, come affermato nella risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "03_mosse_speciali.md#5",
+   "tipo": "aperta",
+   "domanda": "Qual è la promozione a cavallo?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione ripete esattamente la definizione e l'uso della promozione a cavallo indicati nella risposta giusta, sostenendola chiaramente.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#1",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è la sequenza delle mosse per il matto del barbiere?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione riproduce esattamente la sequenza delle mosse per il matto del barbiere, confermando in modo chiaro la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#2",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è il rischio di muovere il pedone alla mossa 1.f3?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma che muovere pedoni inutilmente apre la diagonale del re bianco, permettendo al nero di dare matto in due mosse, il che supporta chiaramente la risposta giusta riguardo al rischio di scacco matto.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#3",
+   "tipo": "aperta",
+   "domanda": "Cosa deve controllare un giocatore prima di ogni mossa?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione ripete esattamente le tre domande che devono essere controllate prima di ogni mossa, quindi sostiene chiaramente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#4",
+   "tipo": "scelta_multipla",
+   "domanda": "Cosa rappresenta il matto del pazzo?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione descrive esplicitamente una situazione in cui il Nero ottiene un matto in due mosse, supportando chiaramente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#5",
+   "tipo": "scelta_multipla",
+   "domanda": "Cosa può succedere dopo 4.Axc6 dxc6 5.Cxe5?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma che il Nero attacca il cavallo e il pedone e4, supportando direttamente la risposta giusta. Inoltre, menziona il recupero del pedone, il che conferma ulteriormente l'idea espressa dalla risposta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#6",
+   "tipo": "aperta",
+   "domanda": "Quale lezione si trae dal matto del barbiere?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma esplicitamente l'importanza di controllare il punto f7 (o f2) all'inizio della partita, supportando direttamente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "parziale"
+  }
+ ]
+}

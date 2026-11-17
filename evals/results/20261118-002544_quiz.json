@@ -1,0 +1,104 @@
+{
+ "modo": "quiz",
+ "etichetta": "",
+ "modello": "gpt-4o-mini",
+ "riassunto": {
+  "n_domande": 9,
+  "n": {},
+  "errori": {
+   "sostegno_basso": [
+    "dispensa_tattiche.md#3"
+   ],
+   "errori_gravi": []
+  },
+  "misure": {
+   "quiz_valide": 0.5,
+   "quiz_sostegno": 0.889,
+   "quiz_giuste_riconosciute": 1.0,
+   "quiz_sbagliate_respinte": 1.0
+  }
+ },
+ "righe": [
+  {
+   "id": "dispensa_tattiche.md#1",
+   "tipo": "scelta_multipla",
+   "domanda": "Cos'è una forchetta negli scacchi?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione definisce chiaramente la forchetta come un attacco doppio che coinvolge un solo pezzo che attacca più pezzi avversari, sostenendo quindi perfettamente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#2",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è il pezzo più adatto a fare forchette?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma chiaramente che 'il cavallo è il pezzo più adatto a fare forchette', supportando direttamente la risposta giusta. Non ci sono ambiguità o limitazioni nella dichiarazione.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#3",
+   "tipo": "scelta_multipla",
+   "domanda": "Quando si ha un'inchiodatura assoluta?",
+   "sostegno": 0.0,
+   "motivo_sostegno": "La citazione si riferisce alla protezione del re, ma non menziona la condizione di avere un pezzo più prezioso dietro al pezzo inchiodato. Pertanto, la risposta giusta non è sostenuta chiaramente.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "dispensa_tattiche.md#4",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è il contrario dell'inchiodatura?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma chiaramente che l'infilata è il contrario dell'inchiodatura, sostenendo direttamente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "03_mosse_speciali.md#1",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è l'unica mossa in cui si muovono due pezzi insieme?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione descrive chiaramente l'arrocco e specifica che è l'unica mossa in cui due pezzi si muovono insieme, supportando direttamente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "03_mosse_speciali.md#2",
+   "tipo": "scelta_multipla",
+   "domanda": "Perché è importante non aspettare a catturare un pedone en passant?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma esplicitamente che è necessario catturare il pedone en passant immediatamente, altrimenti si perde il diritto di farlo, sostenendo così la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#1",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è il punto debole che il Bianco attacca nel matto del barbiere?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione menziona esplicitamente che il Bianco attacca il punto debole f7, il che sostiene chiaramente la risposta giusta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#2",
+   "tipo": "scelta_multipla",
+   "domanda": "In quanti colpi il Nero dà matto nel matto del pazzo?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma chiaramente che il Nero dà matto in due mosse, sostenendo direttamente la risposta corretta.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  },
+  {
+   "id": "04_trappole_e_matti_rapidi.md#3",
+   "tipo": "scelta_multipla",
+   "domanda": "Qual è la lezione che possiamo apprendere dal matto del barbiere?",
+   "sostegno": 1.0,
+   "motivo_sostegno": "La citazione afferma direttamente la lezione di controllare il punto f7, supportando chiaramente la risposta. Non ci sono ambiguità nel messaggio.",
+   "giusta_esito": "corretta",
+   "sbagliata_esito": "errata"
+  }
+ ]
+}
