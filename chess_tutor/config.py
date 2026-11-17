@@ -20,6 +20,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o-mini")
 EMB_MODEL = os.getenv("EMBED_MODEL", "text-embedding-3-small")
 EMB_DIM = 1536
+PRICE_IN, PRICE_OUT = 0.15, 0.60                # $ per 1M token (gpt-4o-mini, listino del corso): per stimare il costo a domanda
 EMB_NAME = "content_embedding"                  # il nome del vettore deve essere lo stesso in collection, embedder e ricerca
 
 # Manopola del chunking (S07): dimensione massima di un pezzo. Con NodeSplitter (che non ha sovrapposizione) ogni SEZIONE
@@ -38,4 +39,7 @@ BRANCHES: dict[str, Branch] = {b.key: b for b in [
     Branch("rules", "Regole e notazione",
            "Come si muovono i pezzi, scacco/matto/stallo/patta, arrocco, en passant, promozione, valore dei pezzi, "
            "notazione algebrica."),
+    Branch("openings", "Aperture",
+           "Principi di apertura, Italiana, Spagnola, Siciliana, Francese, Gambetto di Donna, Londra, Indiana di Re, "
+           "trappole e matti rapidi (matto del barbiere, matto del pazzo)."),
 ]}

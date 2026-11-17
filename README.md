@@ -13,6 +13,9 @@ Il progetto si costruisce **a step**. Questo README cresce con gli step.
 - **Step 1b — ricerca** (`chess_tutor/retrieval.py`): ricerca per **significato** (embedding), per **parole esatte** (BM25) e
   **ibrida** (le due classifiche unite con RRF), con il metodo della lezione S08. `evals/confronta_ricerca.py` confronta i tre modi.
 
+- **Rami** (`chess_tutor/config.py`): `rules` (regole e notazione) e `openings` (aperture). Aggiungere un ramo = una riga in
+  `config.py` + una cartella in `data/` con i documenti `.md`. Ogni ramo ha la sua collection: le ricerche non si mescolano.
+
 ## Installazione (Windows, PowerShell, Python 3.12)
 ```powershell
 python -m venv .venv
@@ -27,6 +30,7 @@ python -m pytest -q                                                 # test (senz
 python -m chess_tutor.ingest "Come funziona l'arrocco?"             # indicizza il ramo rules e prova una ricerca per significato
 python -m chess_tutor.retrieval "Cosa vuol dire O-O-O?" --confronta # i tre modi di ricerca uno sotto l'altro
 python evals/confronta_ricerca.py                                   # tabella: solo significato, solo parole, ibrido
+python -m chess_tutor.ingest "Cos'è la difesa siciliana?" --ramo openings   # lo stesso sul ramo aperture
 ```
 Le ultime tre righe usano la chiave OpenAI (frazioni di centesimo per prova).
 
