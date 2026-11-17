@@ -59,6 +59,46 @@ def test_con_embedding_veri_la_ricerca_trova_il_documento_giusto():
     assert "03_mosse_speciali.md" in fonti
 
 
+def _pezzo(vs, file, sezione):
+    trovati = [c for c in ingest.chunk_del_ramo(vs, "rules")
+               if c.metadata["source_file"] == file and c.metadata.get("sezione") == sezione]
+    assert len(trovati) == 1, f"atteso 1 pezzo per {file} › {sezione}, trovati {len(trovati)}"
+    return trovati[0]
+
+
+def test_ogni_sezione_e_un_pezzo_separato(indice):
+    """Regressione: prima un pezzo partiva a metà ("Ogni alfiere resta…") e mescolava alfiere, cavallo e pedone."""
+    vs, _ = indice
+    cavallo = _pezzo(vs, "01_pezzi_e_movimenti.md", "Il cavallo")
+    assert '"a L"' in cavallo.text
+    assert "alfiere si muove" not in cavallo.text and "pedone avanza" not in cavallo.text
+
+
+def test_ogni_pezzo_inizia_con_titolo_e_sezione(indice):
+    """Il pezzo "sa" di cosa parla: [titolo del documento — sezione] davanti al testo (contextual retrieval, S08)."""
+    vs, _ = indice
+    for c in ingest.chunk_del_ramo(vs, "rules"):
+        assert c.text.startswith("[") and " — " in c.text.split("\n")[0], c.text[:70]
+        assert c.metadata["sezione"], f"sezione non riconosciuta in {c.metadata['source_file']}: {c.text[:70]}"
+    assert _pezzo(vs, "01_pezzi_e_movimenti.md", "Il cavallo").text.startswith("[Come si muovono i pezzi — Il cavallo]\n")
+
+
+def test_il_testo_prima_del_primo_titolo_si_chiama_introduzione(indice):
+    vs, _ = indice
+    assert "64 case" in _pezzo(vs, "01_pezzi_e_movimenti.md", "Introduzione").text
+
+
+def test_l_etichetta_serve_a_citare_la_fonte(indice):
+    vs, _ = indice
+    assert ingest.etichetta(_pezzo(vs, "01_pezzi_e_movimenti.md", "Il cavallo")) == "01_pezzi_e_movimenti.md › Il cavallo"
+
+
+def test_l_anteprima_mostra_il_testo_senza_l_intestazione(indice):
+    vs, _ = indice
+    anteprima = ingest.anteprima(_pezzo(vs, "01_pezzi_e_movimenti.md", "Il cavallo"), 60)
+    assert anteprima.startswith("Il cavallo si muove") and not anteprima.startswith("[")
+
+
 def test_statistiche_dei_chunk(indice):
     vs, _ = indice
     s = ingest.statistiche(vs, "rules")

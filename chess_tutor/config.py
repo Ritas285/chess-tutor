@@ -22,9 +22,9 @@ EMB_MODEL = os.getenv("EMBED_MODEL", "text-embedding-3-small")
 EMB_DIM = 1536
 EMB_NAME = "content_embedding"                  # il nome del vettore deve essere lo stesso in collection, embedder e ricerca
 
-# Le due "manopole" del chunking (S07): dimensione massima del pezzo e sovrapposizione tra pezzi consecutivi
+# Manopola del chunking (S07): dimensione massima di un pezzo. Con NodeSplitter (che non ha sovrapposizione) ogni SEZIONE
+# del documento diventa un pezzo, finché sta sotto questo limite; una sezione più lunga viene spezzata per paragrafi.
 CHUNK_MAX_CHAR = 1024
-CHUNK_OVERLAP = 128
 
 
 @dataclass(frozen=True)

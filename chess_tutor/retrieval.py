@@ -89,7 +89,7 @@ def _stampa(titolo: str, risultati: list) -> None:
     if not risultati:
         print("     (nessun risultato)")
     for i, h in enumerate(risultati, 1):
-        print(f"     {i}. [{h.metadata.get('source_file', '?')}] {h.text.replace(chr(10), ' ')[:90]}…")
+        print(f"     {i}. [{ingest.etichetta(h)}] {ingest.anteprima(h)}…")
 
 
 def main() -> None:

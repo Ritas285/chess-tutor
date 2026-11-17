@@ -8,7 +8,8 @@ Il progetto si costruisce **a step**. Questo README cresce con gli step.
 
 ## Stato attuale: Step 1b — ricerca ibrida sul ramo `rules`
 - **Step 1a — ingestione** (`chess_tutor/ingest.py`): documenti del ramo `rules` (`data/rules/`) → pezzi (chunk) → embedding → Qdrant,
-  con il metodo della lezione S07.
+  con il metodo della lezione S07. Ogni **sezione** del documento è un pezzo, con `[titolo — sezione]` davanti (*contextual
+  retrieval*, S08), così i risultati si citano come `file › sezione`.
 - **Step 1b — ricerca** (`chess_tutor/retrieval.py`): ricerca per **significato** (embedding), per **parole esatte** (BM25) e
   **ibrida** (le due classifiche unite con RRF), con il metodo della lezione S08. `evals/confronta_ricerca.py` confronta i tre modi.
 
