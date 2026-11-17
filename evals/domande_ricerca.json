@@ -1,0 +1,18 @@
+{
+  "nota": "Domande di prova per confrontare i modi di ricerca (Step 1b). NON e' il gold finale (arriva allo Step 1f): sono poche e scritte da chi conosce i documenti, quindi servono a vedere un trend, non a dare un voto.",
+  "domande": [
+    {"id": "S01", "tipo": "semantica", "domanda": "Come funziona l'arrocco?", "attesi": ["03_mosse_speciali.md"]},
+    {"id": "S02", "tipo": "semantica", "domanda": "Che cos'è la presa en passant?", "attesi": ["03_mosse_speciali.md"]},
+    {"id": "S03", "tipo": "semantica", "domanda": "Cosa succede quando un pedone arriva all'ultima traversa?", "attesi": ["03_mosse_speciali.md"]},
+    {"id": "S04", "tipo": "semantica", "domanda": "Che differenza c'è tra stallo e scacco matto?", "attesi": ["02_scacco_matto_stallo_patta.md"]},
+    {"id": "S05", "tipo": "semantica", "domanda": "Quanto vale la donna rispetto a una torre?", "attesi": ["04_valore_pezzi_e_notazione.md"]},
+    {"id": "S06", "tipo": "semantica", "domanda": "Come si muove il cavallo?", "attesi": ["01_pezzi_e_movimenti.md"]},
+    {"id": "S07", "tipo": "semantica", "domanda": "Quando una partita finisce in patta per ripetizione?", "attesi": ["02_scacco_matto_stallo_patta.md"]},
+    {"id": "S08", "tipo": "semantica", "domanda": "Come si scrive l'arrocco lungo in notazione?", "attesi": ["03_mosse_speciali.md", "04_valore_pezzi_e_notazione.md"]},
+    {"id": "L01", "tipo": "lessicale", "domanda": "Cosa vuol dire O-O-O?", "attesi": ["03_mosse_speciali.md", "04_valore_pezzi_e_notazione.md"]},
+    {"id": "L02", "tipo": "lessicale", "domanda": "Cosa indica Tad1?", "attesi": ["04_valore_pezzi_e_notazione.md"]},
+    {"id": "L03", "tipo": "lessicale", "domanda": "Come si scrive la promozione e8=D?", "attesi": ["04_valore_pezzi_e_notazione.md"]},
+    {"id": "L04", "tipo": "lessicale", "domanda": "Cosa significa il simbolo # nella notazione?", "attesi": ["04_valore_pezzi_e_notazione.md"]},
+    {"id": "L05", "tipo": "lessicale", "domanda": "Cosa dice la regola delle 50 mosse?", "attesi": ["02_scacco_matto_stallo_patta.md"]}
+  ]
+}

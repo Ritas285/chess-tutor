@@ -1,5 +1,6 @@
 datapizza-ai==0.1.0
 datapizza-ai-clients-openai
 datapizza-ai-embedders-openai
+rank-bm25
 python-dotenv
 pytest
