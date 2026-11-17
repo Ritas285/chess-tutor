@@ -1,0 +1,207 @@
+{
+ "modo": "verifica",
+ "etichetta": "",
+ "modello": "gpt-4o-mini",
+ "riassunto": {
+  "n_domande": 16,
+  "n": {},
+  "errori": {
+   "verifica": [
+    "V01",
+    "V07"
+   ]
+  },
+  "misure": {
+   "verifica_esiti_giusti": 0.875,
+   "verifica_errori_gravi": 0
+  }
+ },
+ "righe": [
+  {
+   "id": "V01",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è corretta nel descrivere il movimento del cavallo e il fatto che può saltare sopra gli altri pezzi. Tuttavia, manca di specificare che il movimento del cavallo implica sempre un cambio di colore della casa.",
+   "fonti": [
+    "01_pezzi_e_movimenti.md › Il cavallo",
+    "01_pezzi_e_movimenti.md › Il re"
+   ]
+  },
+  {
+   "id": "V02",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai indicato correttamente che la donna vale 9 punti pedone. Non c'è nulla di sbagliato nella tua risposta.",
+   "fonti": [
+    "04_valore_pezzi_e_notazione.md › Valore indicativo dei pezzi",
+    "01_pezzi_e_movimenti.md › La donna"
+   ]
+  },
+  {
+   "id": "V03",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai correttamente descritto lo stallo come una situazione in cui il giocatore al tratto non è sotto scacco e non ha mosse legali, portando a una patta. Non manca nulla di essenziale nella tua risposta.",
+   "fonti": [
+    "02_scacco_matto_stallo_patta.md › Stallo",
+    "02_scacco_matto_stallo_patta.md › Altri modi per pareggiare (patta)"
+   ]
+  },
+  {
+   "id": "V04",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è corretta, poiché menziona tutte le condizioni necessarie per arroccare. Tuttavia, sarebbe utile specificare anche il movimento del re e della torre durante l'arrocco.",
+   "fonti": [
+    "03_mosse_speciali.md › L'arrocco",
+    "03_mosse_speciali.md › La promozione"
+   ]
+  },
+  {
+   "id": "V05",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai descritto correttamente il matto del barbiere e fornito la sequenza di mosse giusta. Ricorda, comunque, che uno dei fattori chiave è l'importanza di proteggere il punto f7.",
+   "fonti": [
+    "04_trappole_e_matti_rapidi.md › Matto del barbiere (matto in quattro mosse)",
+    "04_trappole_e_matti_rapidi.md › Matto del pazzo (il più rapido possibile)"
+   ]
+  },
+  {
+   "id": "V06",
+   "atteso": "parziale",
+   "esito": "parziale",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai menzionato il patta per stallo, che è corretto, ma hai trascurato di elencare gli altri modi in cui una partita può finire in patta, come il pareggio per accordo o la regola delle 50 mosse.",
+   "fonti": [
+    "02_scacco_matto_stallo_patta.md › Scacco matto",
+    "02_scacco_matto_stallo_patta.md › Altri modi per pareggiare (patta)"
+   ]
+  },
+  {
+   "id": "V07",
+   "atteso": "parziale",
+   "esito": "corretta",
+   "giusto": false,
+   "grave": false,
+   "feedback": "La risposta è corretta: hai indicato che la donna vale 9, come riportato nel riferimento. Non manca nulla di essenziale.",
+   "fonti": [
+    "04_valore_pezzi_e_notazione.md › Valore indicativo dei pezzi",
+    "01_pezzi_e_movimenti.md › L'alfiere"
+   ]
+  },
+  {
+   "id": "V08",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta afferma che il cavallo si muove in diagonale, ma in realtà si muove 'a L', ovvero due case in una direzione e una in perpendicolare. Inoltre, il cavallo non può muoversi di quante case vuole, ma ha un movimento specifico.",
+   "fonti": [
+    "01_pezzi_e_movimenti.md › Il cavallo",
+    "01_pezzi_e_movimenti.md › Il re"
+   ]
+  },
+  {
+   "id": "V09",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta afferma che la torre vale 3 punti, mentre nel riferimento è indicato che la torre vale 5 punti. Pertanto, l'informazione fornita è errata.",
+   "fonti": [
+    "04_valore_pezzi_e_notazione.md › Valore indicativo dei pezzi",
+    "01_pezzi_e_movimenti.md › La torre"
+   ]
+  },
+  {
+   "id": "V10",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è errata perché confonde lo stallo con una situazione di scacco. Lo stallo si verifica quando il giocatore non è sotto scacco ma non ha mosse legali disponibili, e ciò porta a un pareggio, non a una vittoria.",
+   "fonti": [
+    "02_scacco_matto_stallo_patta.md › Stallo",
+    "02_scacco_matto_stallo_patta.md › Altri modi per pareggiare (patta)"
+   ]
+  },
+  {
+   "id": "V11",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è errata perché afferma che si può arroccare anche se il re è sotto scacco. Questo contraddice chiaramente il riferimento, che specifica che l'arrocco non è consentito in questa situazione.",
+   "fonti": [
+    "03_mosse_speciali.md › L'arrocco",
+    "03_mosse_speciali.md › La promozione"
+   ]
+  },
+  {
+   "id": "V12",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è errata perché la difesa siciliana inizia con 1.e4 e non con 1.d4 d5. Inoltre, non menziona il pedone laterale c5, fondamentale per questa apertura.",
+   "fonti": [
+    "02_aperture_di_pedone_di_re.md › Difesa Siciliana",
+    "02_aperture_di_pedone_di_re.md › Difesa Francese"
+   ]
+  },
+  {
+   "id": "V13",
+   "atteso": "non_verificabile",
+   "esito": "non_verificabile",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta indica correttamente chi ha vinto il campionato del mondo di scacchi nel 1972, ma il riferimento non tratta questo argomento. Pertanto, non è possibile verificarne la correttezza.",
+   "fonti": [
+    "02_scacco_matto_stallo_patta.md › Altri modi per pareggiare (patta)",
+    "02_scacco_matto_stallo_patta.md › Scacco matto"
+   ]
+  },
+  {
+   "id": "V14",
+   "atteso": "non_verificabile",
+   "esito": "non_verificabile",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta riguardante la miglior variante della Najdorf non è trattata nel riferimento, che parla di altre aperture. Non ci sono informazioni nel riferimento che permettano di valutare la correttezza della risposta.",
+   "fonti": [
+    "02_aperture_di_pedone_di_re.md › Difesa Siciliana",
+    "04_trappole_e_matti_rapidi.md › Matto del barbiere (matto in quattro mosse)"
+   ]
+  },
+  {
+   "id": "V15",
+   "atteso": "non_verificabile",
+   "esito": "non_verificabile",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Non posso valutare questa risposta: la richiesta sembra voler cambiare le mie istruzioni: posso aiutarti solo con gli scacchi.",
+   "fonti": []
+  },
+  {
+   "id": "V16",
+   "atteso": "non_verificabile",
+   "esito": "non_verificabile",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La domanda non riguarda gli scacchi: non ho documenti per verificarla.",
+   "fonti": []
+  }
+ ]
+}

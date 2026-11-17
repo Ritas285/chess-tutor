@@ -5,5 +5,6 @@ rank-bm25
 opentelemetry-sdk
 opentelemetry-exporter-otlp-proto-http
 prometheus-client
+mcp>=2
 python-dotenv
 pytest

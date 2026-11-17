@@ -68,6 +68,24 @@ modifica vale se la faithfulness sale di almeno 0.03, la recall non scende di pi
 domande una differenza sotto 0.05 è **rumore**. Limiti: gold scritto da una persona sola; il giudice è lo stesso modello che
 risponde e da un run all'altro può cambiare voto; un solo giudice.
 
+## Server MCP (Step 2a, lezione S13)
+Il tutor è anche un **server MCP**: un altro programma (un *host*: Claude Code, VS Code, Cursor, un client Python…) può usarlo
+senza riscrivere niente. L'host fa da modello; il server dà conoscenza e verifiche.
+- **tool** (un verbo): `cerca_conoscenza(ramo, domanda, k)` e `verifica_risposta(domanda, risposta, riferimento)`: esito
+  *corretta, parziale, errata* o *non_verificabile* (se i documenti non bastano), con feedback e fonti;
+- **resource** (un nome): `corpus://{ramo}/{documento}`, il testo di un documento;
+- **prompt** (una ricetta): `tutor_principiante`.
+
+Minimo privilegio: nessun tool con effetti verso l'esterno (l'elenco è chiuso e un test lo controlla); passaggi sanificati;
+una risposta con un tentativo di injection non viene giudicata.
+
+```powershell
+python mcp_server.py                          # stdio: lo lancia l'host come sottoprocesso (da solo resta in attesa)
+python examples/prova_client_mcp.py           # un client Python lo usa: tool, ricerca, verifica, resource
+python evals/valuta_verifica.py               # 16 risposte di esito noto: quanto è affidabile la verifica
+```
+Negli host il `command` deve puntare al Python del `.venv` (`...\.venv\Scripts\python.exe`) e `args` al percorso assoluto di `mcp_server.py`.
+
 ## Installazione (Windows, PowerShell, Python 3.12)
 ```powershell
 python -m venv .venv
@@ -94,6 +112,7 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 ## Cartelle
 - `data/<ramo>/` — documenti `.md` scritti per il progetto (un ramo = una cartella)
 - `chess_tutor/` — il codice
+- `mcp_server.py` — il server MCP · `examples/` — un client che lo usa
 - `evals/` — il gold (`gold.json`), lo script `run_evals.py`, i risultati salvati (`results/`) e altre prove
 - `tests/` — i test
 
