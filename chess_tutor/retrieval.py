@@ -12,7 +12,7 @@ import unicodedata
 
 from rank_bm25 import BM25Okapi
 
-from . import ingest
+from . import config, ingest
 
 MODI = ("dense", "bm25", "ibrido")
 K0_RRF = 60      # valore standard del corso (S08): non va "tarato"
@@ -84,6 +84,16 @@ class Ricerca:
         return [self.chunks[i] for i in ordine[:k]]
 
 
+def crea_ricerche(embedder, rami=None, vs=None) -> dict[str, Ricerca]:
+    """Indicizza i rami (tutti, se non se ne indicano) e restituisce una Ricerca per ramo: {"rules": ..., "openings": ...}."""
+    vs = vs or ingest.crea_vector_store()
+    ricerche = {}
+    for ramo in rami or config.BRANCHES:
+        ingest.indicizza_ramo(vs, embedder, ramo, verbose=False)
+        ricerche[ramo] = Ricerca(vs, embedder, ramo)
+    return ricerche
+
+
 def _stampa(titolo: str, risultati: list) -> None:
     print(f"  {titolo}")
     if not risultati:
@@ -93,7 +103,6 @@ def _stampa(titolo: str, risultati: list) -> None:
 
 
 def main() -> None:
-    from . import config
     ap = argparse.ArgumentParser(description="Cerca nei documenti di un ramo. Serve OPENAI_API_KEY (frazioni di centesimo).")
     ap.add_argument("domanda", nargs="?", default="Cosa vuol dire O-O-O?")
     ap.add_argument("--ramo", default="rules", choices=list(config.BRANCHES))

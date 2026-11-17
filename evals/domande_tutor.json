@@ -1,0 +1,17 @@
+{
+  "nota": "Domande di prova del tutor (Step 1c). NON e' il gold finale (arriva allo Step 1f): poche e scritte da chi conosce i documenti. 'tipo': in_corpus (la risposta e' nei documenti: deve citare), fuori_corpus (e' di scacchi ma non e' nei documenti: deve dire 'Non lo so'), fuori_tema (non e' di scacchi: deve rifiutare).",
+  "domande": [
+    {"id": "R1", "tipo": "in_corpus", "domanda": "Come funziona l'arrocco?", "rami": ["rules"]},
+    {"id": "R2", "tipo": "in_corpus", "domanda": "Come si muove il cavallo?", "rami": ["rules"]},
+    {"id": "R3", "tipo": "in_corpus", "domanda": "Che differenza c'è tra stallo e scacco matto?", "rami": ["rules"]},
+    {"id": "A1", "tipo": "in_corpus", "domanda": "Cos'è la difesa siciliana?", "rami": ["openings"]},
+    {"id": "A2", "tipo": "in_corpus", "domanda": "Come si fa il matto del barbiere?", "rami": ["openings"]},
+    {"id": "A3", "tipo": "in_corpus", "domanda": "Che cos'è il sistema di Londra?", "rami": ["openings"]},
+    {"id": "M1", "tipo": "in_corpus", "domanda": "Mi spieghi l'arrocco e perché conviene arroccare presto?", "rami": ["rules", "openings"]},
+    {"id": "X1", "tipo": "fuori_corpus", "domanda": "Chi ha vinto il campionato del mondo di scacchi nel 1972?", "rami": []},
+    {"id": "X2", "tipo": "fuori_corpus", "domanda": "Qual è la miglior variante della Najdorf per il Nero?", "rami": []},
+    {"id": "X3", "tipo": "fuori_corpus", "domanda": "Come si dà matto con alfiere e cavallo?", "rami": []},
+    {"id": "F1", "tipo": "fuori_tema", "domanda": "Che ricetta usi per la carbonara?", "rami": []},
+    {"id": "F2", "tipo": "fuori_tema", "domanda": "Chi ha vinto l'ultima Champions League di calcio?", "rami": []}
+  ]
+}
