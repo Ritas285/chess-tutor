@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import time
+from contextlib import nullcontext
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -20,7 +22,8 @@ from datapizza.agents.runner import AgentRunner
 from datapizza.tools import Tool
 from datapizza.type import FunctionCallBlock
 
-from . import audit, config, guardrails, ingest, retrieval
+from . import audit, config, guardrails, ingest, observability, retrieval
+from . import otel_phoenix_bridge as ponte
 from .guardrails import Controlli
 from .retrieval import Ricerca
 from .router import Decisione, instrada
@@ -71,6 +74,18 @@ class Risposta:
         return (self.token_prompt * config.PRICE_IN + self.token_completati * config.PRICE_OUT) / 1_000_000
 
 
+def _cerca_tracciata(ricerca: Ricerca, domanda: str, k: int) -> list:
+    """La ricerca dentro uno span RETRIEVER: in Phoenix si vedono i documenti recuperati (S11). Se il tracing non è attivo lo
+    span non fa nulla. L'osservabilità non deve MAI fermare ciò che osserva: se lo span dà problemi si cerca comunque."""
+    try:
+        with ponte.span_manuale("retrieval", "RETRIEVER", ingresso=domanda, **{"retrieval.top_k": k}) as sp:
+            trovati = ricerca.cerca(domanda, k)
+            ponte.annota_documenti(sp, trovati)
+            return trovati
+    except Exception:       # noqa: BLE001
+        return ricerca.cerca(domanda, k)
+
+
 def crea_tool_ricerca(ricerca: Ricerca, ramo: str, fonti: list[str], k: int = 3,
                       note: list[str] | None = None, sanifica: bool = True) -> Tool:
     """Lo strumento `cerca_<ramo>`: ricerca ibrida nei documenti del ramo. Restituisce i passaggi con la fonte, marcati come DATI.
@@ -81,7 +96,7 @@ def crea_tool_ricerca(ricerca: Ricerca, ramo: str, fonti: list[str], k: int = 3,
     note = note if note is not None else []
 
     def _cerca(domanda: str) -> str:
-        trovati = ricerca.cerca(domanda, k)
+        trovati = _cerca_tracciata(ricerca, domanda, k)
         if not trovati:
             return "Nessun passaggio trovato in questo ramo."
         blocchi = []
@@ -105,23 +120,26 @@ def _tool_usati(memoria) -> list[str]:
 
 class Tutor:
     def __init__(self, client, ricerche: dict[str, Ricerca], max_steps: int = 4, tool_choice: str = "required_first",
-                 controlli: Controlli | None = None, audit_path: Path | None = None):
+                 controlli: Controlli | None = None, audit_path: Path | None = None,
+                 metriche: observability.Metriche | None = None):
         """`tool_choice="required_first"`: il CODICE impone la prima ricerca (S03: tool_choice). Con "auto" decideva il modello
         e su una domanda di scacchi fuori corpus rispondeva a memoria, senza fonti, 3 volte su 3 (misurato).
         `controlli`: gli interruttori dei guardrail (tutti accesi se non indicati). `audit_path`: dove scrivere il registro
-        (nessun registro se None)."""
+        (nessun registro se None). `metriche`: le metriche Prometheus (nessuna se None)."""
         self.client, self.ricerche, self.max_steps, self.tool_choice = client, ricerche, max_steps, tool_choice
         self.controlli = controlli or Controlli()
         self.audit_path = audit_path
+        self.metriche = metriche
 
     @classmethod
-    def crea(cls, controlli: Controlli | None = None) -> "Tutor":
+    def crea(cls, controlli: Controlli | None = None, metriche: observability.Metriche | None = None) -> "Tutor":
         """Il tutor vero: client OpenAI + indice di tutti i rami (qualche secondo e frazioni di centesimo di embedding)."""
         if not config.OPENAI_API_KEY:
             raise RuntimeError("OPENAI_API_KEY non impostata: copia .env.example in .env e inserisci la tua chiave.")
         from datapizza.clients.openai import OpenAIClient
         client = OpenAIClient(api_key=config.OPENAI_API_KEY, model=config.CHAT_MODEL)
-        return cls(client, retrieval.crea_ricerche(ingest.crea_embedder()), controlli=controlli, audit_path=config.AUDIT_PATH)
+        return cls(client, retrieval.crea_ricerche(ingest.crea_embedder()), controlli=controlli, audit_path=config.AUDIT_PATH,
+                   metriche=metriche)
 
     def costruisci_agente(self, rami: list[str], fonti: list[str], note: list[str] | None = None) -> Agent:
         """Un agente nuovo per domanda, con SOLO i tool dei rami scelti dal router (minimo privilegio, S15)."""
@@ -130,10 +148,19 @@ class Tutor:
 
     def ask(self, domanda: str) -> Risposta:
         t0 = time.perf_counter()
-        risposta = self._rispondi(domanda)
+        try:     # un trace per domanda: radice CHAIN con domanda e risposta; sotto, router, agente, modello e ricerca (S11)
+            span = ponte.span_manuale("chess_tutor.domanda", "CHAIN", ingresso=domanda)
+        except Exception:       # noqa: BLE001 - l'osservabilità non deve fermare il tutor
+            span = nullcontext()
+        with span as radice:
+            risposta = self._rispondi(domanda)
+            if radice is not None:
+                radice.set_attribute("output.value", risposta.testo)
         risposta.latenza_s = round(time.perf_counter() - t0, 3)
         if self.audit_path:
             audit.scrivi(self.audit_path, domanda, risposta)
+        if self.metriche:
+            self.metriche.registra(risposta)
         return risposta
 
     def _rispondi(self, domanda: str) -> Risposta:
@@ -169,12 +196,33 @@ class Tutor:
 def main() -> None:
     ap = argparse.ArgumentParser(description="Fai una domanda al tutor. Serve OPENAI_API_KEY (costo: frazioni di centesimo).")
     ap.add_argument("domanda", nargs="?", default="Come funziona l'arrocco?")
+    ap.add_argument("--osserva", action="store_true",
+                    help="manda i trace a Phoenix (localhost:6006) e le metriche a Prometheus (porta 8000): serve Docker acceso")
+    ap.add_argument("--chat", action="store_true", help="resta in attesa di altre domande (invio vuoto per uscire)")
     args = ap.parse_args()
     logging.getLogger("datapizza").setLevel(logging.WARNING)       # niente righe INFO dell'indicizzazione: si vedono i passi dell'agente
+    metriche = None
+    if args.osserva:
+        observability.setup_tracing(observability.PHOENIX_HTTP)
+        metriche = observability.Metriche(int(os.getenv("METRICS_PORT", "8000")))
+        print("Osservabilità attiva: trace -> http://localhost:6006 · metriche -> http://localhost:8000/metrics")
+    else:
+        metriche = observability.attiva_da_ambiente()          # oppure da .env: PHOENIX_ENDPOINT, ENABLE_METRICS
     print("Preparo l'indice dei rami…")
-    tutor = Tutor.crea()
-    print(f"\nDomanda: {args.domanda}\n")
-    r = tutor.ask(args.domanda)
+    tutor = Tutor.crea(metriche=metriche)
+    domanda = args.domanda
+    while True:
+        print(f"\nDomanda: {domanda}\n")
+        _stampa(tutor.ask(domanda))
+        if not args.chat:
+            break
+        domanda = input("\nAltra domanda (invio vuoto per uscire)> ").strip()
+        if not domanda:
+            break
+    observability.svuota_tracing()           # invia gli ultimi span a Phoenix prima di uscire
+
+
+def _stampa(r: Risposta) -> None:
     print("\n" + "=" * 70)
     print(f"RISPOSTA:\n{r.testo}\n")
     print("COME HA LAVORATO")

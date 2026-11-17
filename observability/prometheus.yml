@@ -1,0 +1,15 @@
+# Prometheus legge le metriche del Chess Tutor ogni 5 secondi.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: chess-tutor
+    static_configs:
+      # host.docker.internal: dal container verso il programma che gira sul tuo PC (porta 8000, vedi METRICS_PORT).
+      # Si guarda lo stato su http://localhost:9090/targets: "chess-tutor" deve essere UP.
+      - targets: ["host.docker.internal:8000"]
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

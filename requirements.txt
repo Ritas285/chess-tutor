@@ -2,5 +2,8 @@ datapizza-ai==0.1.0
 datapizza-ai-clients-openai
 datapizza-ai-embedders-openai
 rank-bm25
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+prometheus-client
 python-dotenv
 pytest

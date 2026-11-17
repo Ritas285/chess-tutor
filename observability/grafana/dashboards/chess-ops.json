@@ -1,0 +1,67 @@
+{
+  "uid": "chess-tutor-ops",
+  "title": "Chess Tutor — operazioni",
+  "tags": ["chess-tutor"],
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "type": "text", "title": "", "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "options": { "mode": "markdown", "content": "**Questa dashboard risponde a: _quanto costa, quanto è lento, quante volte intervengono i guardrail?_** Non sa cosa sia un documento recuperato. Per _perché questa risposta è così?_ si usa Phoenix (http://localhost:6006)." }
+    },
+    {
+      "type": "timeseries", "title": "Latenza per risposta (p50 / p95)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 3 },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "histogram_quantile(0.50, sum(rate(chess_latenza_secondi_bucket[1m])) by (le))", "legendFormat": "p50" },
+        { "refId": "B", "expr": "histogram_quantile(0.95, sum(rate(chess_latenza_secondi_bucket[1m])) by (le))", "legendFormat": "p95" }
+      ]
+    },
+    {
+      "type": "timeseries", "title": "Domande al minuto, per esito",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 3 },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(chess_domande_total[1m])) by (esito) * 60", "legendFormat": "{{esito}}" }
+      ]
+    },
+    {
+      "type": "stat", "title": "Costo cumulato della sessione",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 11 },
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 4 }, "overrides": [] },
+      "targets": [ { "refId": "A", "expr": "sum(chess_costo_usd_total)" } ]
+    },
+    {
+      "type": "stat", "title": "Costo medio per domanda",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 11 },
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 5 }, "overrides": [] },
+      "targets": [ { "refId": "A", "expr": "sum(chess_costo_usd_total) / clamp_min(sum(chess_latenza_secondi_count), 1)" } ]
+    },
+    {
+      "type": "timeseries", "title": "Token al minuto (prompt vs completati)",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 11 },
+      "targets": [ { "refId": "A", "expr": "sum(rate(chess_token_total[1m])) by (tipo) * 60", "legendFormat": "{{tipo}}" } ]
+    },
+    {
+      "type": "bargauge", "title": "Domande per ramo — dove manda il router?",
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 17 },
+      "targets": [ { "refId": "A", "expr": "sum(chess_domande_total) by (ramo)", "legendFormat": "{{ramo}}" } ]
+    },
+    {
+      "type": "bargauge", "title": "Chiamate per strumento",
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true },
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 17 },
+      "targets": [ { "refId": "A", "expr": "sum(chess_chiamate_strumento_total) by (strumento)", "legendFormat": "{{strumento}}" } ]
+    },
+    {
+      "type": "bargauge", "title": "Interventi dei guardrail",
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true },
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 17 },
+      "targets": [ { "refId": "A", "expr": "sum(chess_interventi_guardrail_total) by (tipo)", "legendFormat": "{{tipo}}" } ]
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

@@ -33,6 +33,24 @@ Ogni domanda lascia una riga in `logs/audit.jsonl` (cosa è stato deciso, non il
 Il **retest** (`tests/test_sicurezza.py`, `evals/retest_sicurezza.py`) lancia lo stesso attacco con le barriere spente e accese.
 Limite onesto: le regole a parole chiave si aggirano; per questo ci sono più barriere e la prompt injection si mitiga, non si elimina.
 
+## Osservabilità (Step 1g, lezione S11)
+Due livelli, entrambi opzionali (se non sono attivi il tutor funziona uguale):
+- **Trace → Phoenix** (`http://localhost:6006`): per ogni domanda l'albero router / agente / modello / ricerca, il prompt, i
+  **documenti recuperati** e i token. Risponde a *"perché questa risposta è così?"*.
+- **Metriche → Prometheus + Grafana** (`http://localhost:3000`, dashboard *Chess Tutor — operazioni*): domande per esito e per ramo,
+  latenza p50/p95, token, costo, chiamate per strumento, interventi dei guardrail. Risponde a *"quanto costa e quanto è lento?"*.
+
+```powershell
+docker compose -f observability/docker-compose.yml up -d     # serve Docker Desktop acceso: avvia Phoenix, Prometheus, Grafana
+python evals/genera_traffico.py                              # 12 domande + 1 trucco: riempie Phoenix e Grafana
+python -m chess_tutor.tutor --osserva "Come funziona l'arrocco?"   # una sola domanda, con trace verso Phoenix
+python -m chess_tutor.tutor --osserva --chat                 # resta in attesa di altre domande (invio vuoto per uscire)
+docker compose -f observability/docker-compose.yml down      # spegne lo stack
+```
+Prometheus legge le metriche da `http://localhost:8000/metrics` (stato su `http://localhost:9090/targets`). Il "ponte" che traduce
+gli attributi di datapizza-ai per Phoenix (`chess_tutor/otel_phoenix_bridge.py`) è il file del corso (S11). Phoenix e le
+metriche sono locali: nulla esce dal computer.
+
 ## Installazione (Windows, PowerShell, Python 3.12)
 ```powershell
 python -m venv .venv

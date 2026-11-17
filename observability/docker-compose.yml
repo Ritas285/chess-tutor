@@ -1,0 +1,50 @@
+# Stack di osservabilità del Chess Tutor (lezione S11): Phoenix per i trace, Prometheus + Grafana per le metriche.
+#
+#   docker compose -f observability/docker-compose.yml up -d
+#
+# Phoenix   http://localhost:6006   "perché questa risposta è così?": trace di ogni domanda (prompt, documenti, token)
+# Grafana   http://localhost:3000   "quanto costa e quanto è lento?": dashboard "Chess Tutor — operazioni" (senza login)
+# Prometheus http://localhost:9090  legge le metriche del tutor ogni 5 secondi da http://localhost:8000/metrics
+#
+# Serve Docker Desktop ACCESO. Lo stack è interamente locale. Le immagini sono quelle del corso (S11).
+services:
+
+  phoenix:
+    image: arizephoenix/phoenix:version-11.31.0
+    container_name: chess-phoenix
+    ports:
+      - "6006:6006"     # interfaccia + endpoint OTLP/HTTP -> http://localhost:6006/v1/traces (NON la 4317: è gRPC)
+      - "4317:4317"
+    environment:
+      - PHOENIX_WORKING_DIR=/data
+    volumes:
+      - phoenix_data:/data
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: chess-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: chess-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true          # in demo si entra senza login
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_USERS_DEFAULT_THEME=light
+    volumes:
+      # datasource e dashboard come FILE (S11): una dashboard fatta a click non sta nel git e non si ripristina
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
+volumes:
+  phoenix_data:
