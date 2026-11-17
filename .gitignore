@@ -1,0 +1,11 @@
+﻿.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+logs/
+qdrant_storage/
+
+# Note personali (non fanno parte del progetto pubblicato)
+docs/
+PIANO_PROGETTO.md

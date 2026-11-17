@@ -1,0 +1,5 @@
+datapizza-ai==0.1.0
+datapizza-ai-clients-openai
+datapizza-ai-embedders-openai
+python-dotenv
+pytest
