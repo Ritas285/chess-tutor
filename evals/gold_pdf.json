@@ -1,0 +1,30 @@
+{
+  "nota": "GOLD PDF dello Step 6 (md contro PDF, richiesto da Giuseppe): 24 domande scritte leggendo i tre PDF, PRIMA di misurare e da NON ritoccare per far salire un numero (Goodhart). Separato da gold.json di proposito: i PDF sono opzionali e il gold del 18 nov deve restare confrontabile (le sue domande 'fuori_corpus' devono restare tali). Ogni domanda ha 'frasi': pezzi di testo copiati dal PDF che contengono la risposta (basta una). Un risultato e' giusto se uno dei pezzi trovati contiene una di quelle frasi, scritte senza accenti, maiuscole, spazi e punteggiatura: cosi' la misura vale per QUALUNQUE formato e taglio dei pezzi (md, pdf, altro) e non dipende dal nome del file. Limiti dichiarati: un solo autore, 12 domande per ramo (una differenza di 1 domanda e' rumore), e la frase indica DOVE sta la risposta, non se il pezzo basta a rispondere. 'ramo' = il ramo PDF in cui la risposta si trova.",
+  "domande": [
+    {"id": "R01", "ramo": "regolamento", "domanda": "Chi muove per primo, il Bianco o il Nero?", "frasi": ["Il giocatore che ha i pezzi di colore chiaro (Bianco) esegue la prima mossa"]},
+    {"id": "R02", "ramo": "regolamento", "domanda": "Di quante case è fatta la scacchiera?", "frasi": ["griglia 8 x 8 di 64 case uguali"]},
+    {"id": "R03", "ramo": "regolamento", "domanda": "Come si chiamano le file verticali della scacchiera?", "frasi": ["Le otto file verticali di case sono dette ‘colonne’"]},
+    {"id": "R04", "ramo": "regolamento", "domanda": "Come si muove l'alfiere?", "frasi": ["L’Alfiere si può muovere su una qualunque casa lungo una diagonale"]},
+    {"id": "R05", "ramo": "regolamento", "domanda": "In che modo si muove il cavallo?", "frasi": ["Il Cavallo si può muovere su ciascuna delle case più vicine a quella sulla quale si trova"]},
+    {"id": "R06", "ramo": "regolamento", "domanda": "Come cattura un pedone?", "frasi": ["su una casa posta diagonalmente di fronte ad esso"]},
+    {"id": "R07", "ramo": "regolamento", "domanda": "Cosa succede se un pedone avversario avanza di due case accanto al mio pedone?", "frasi": ["come se quest’ultimo fosse stato avanzato di una sola casa"]},
+    {"id": "R08", "ramo": "regolamento", "domanda": "In cosa si trasforma un pedone che arriva in fondo alla scacchiera?", "frasi": ["una nuova Donna, Torre, Alfiere o Cavallo dello stesso colore"]},
+    {"id": "R09", "ramo": "regolamento", "domanda": "Quando perdo il diritto di arroccare?", "frasi": ["Il diritto all’arrocco è perduto"]},
+    {"id": "R10", "ramo": "regolamento", "domanda": "Se tocco il re e poi una torre, cosa devo fare?", "frasi": ["tocca il Re ed una Torre, deve arroccare da quel lato"]},
+    {"id": "R11", "ramo": "regolamento", "domanda": "Quando finisce la partita per stallo?", "frasi": ["non ha alcuna mossa legale ed il suo Re non è sotto scacco"]},
+    {"id": "R12", "ramo": "regolamento", "domanda": "Dopo quante mosse senza catture è patta?", "frasi": ["almeno le ultime 50 mosse senza alcuna mossa di pedone e senza alcuna cattura"]},
+
+    {"id": "C01", "ramo": "corsi", "domanda": "Come si dà matto con la donna e il re contro il re solo?", "frasi": ["si applicherà il principio della gabbia", "Posizionare la Donna nella “posizione del Cavallo”"]},
+    {"id": "C02", "ramo": "corsi", "domanda": "Perché bisogna stare attenti allo stallo mentre si dà matto?", "frasi": ["Attenzione sempre a non dare stallo", "stallo, la partita è patta"]},
+    {"id": "C03", "ramo": "corsi", "domanda": "Come si dà matto con la torre e il re contro il re?", "frasi": ["Il matto di Torre e Re contro Re è molto simile a quello di Donna", "Re e Torre contro Re. Anche qui decidere"]},
+    {"id": "C04", "ramo": "corsi", "domanda": "Cos'è la regola del quadrato?", "frasi": ["può essere catturato dal Re avversario solo se questo si trova all’interno del quadrato"]},
+    {"id": "C05", "ramo": "corsi", "domanda": "Cos'è il matto in fondo?", "frasi": ["Il più comune è il matto in fondo"]},
+    {"id": "C06", "ramo": "corsi", "domanda": "Cos'è la forchetta del pedone?", "frasi": ["Questa mossa tipica del pedone è detta “forchetta”"]},
+    {"id": "C07", "ramo": "corsi", "domanda": "Cos'è la mossa di scoperta?", "frasi": ["il cavallo muovendosi “scopre” la strada all’alfiere"]},
+    {"id": "C08", "ramo": "corsi", "domanda": "Quali sono le case centrali e perché conviene controllarle?", "frasi": ["le quattro case centrali: d4, e4, d5 ed e5"]},
+    {"id": "C09", "ramo": "corsi", "domanda": "Quanto vale una donna rispetto alle torri e ai pezzi leggeri?", "frasi": ["Una Donna vale quanto due Torri o tre pezzi leggeri"]},
+    {"id": "C10", "ramo": "corsi", "domanda": "Quando conviene avere due torri invece di una donna?", "frasi": ["in posizioni aperte, due Torri sono meglio di una Donna"]},
+    {"id": "C11", "ramo": "corsi", "domanda": "Cos'è il matto affogato?", "frasi": ["Questo si chiama matto affogato perché il re nero è ostacolato dai propri pezzi"]},
+    {"id": "C12", "ramo": "corsi", "domanda": "Si può dare matto con un cavallo solo e il re?", "frasi": ["con il solo Cavallo e il Re contro il Re"]}
+  ]
+}

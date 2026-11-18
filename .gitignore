@@ -8,6 +8,9 @@ __pycache__/
 logs/
 qdrant_storage/
 
+# PDF trovati online per i rami opzionali (diritti non liberi: NON si ridistribuiscono, vedi README)
+data/*/*.pdf
+
 # Note personali (non fanno parte del progetto pubblicato)
 docs/
 PIANO_PROGETTO.md

@@ -179,6 +179,57 @@ Linux o macOS usa `.venv/bin/python`.
 python evals/verifica_contenuti.py    # le mosse scritte nei documenti di data/ sono legali? (python-chess, nessuna chiave)
 ```
 
+## Rami con PDF: md contro PDF (Step 6, opzionale)
+Giuseppe ha chiesto di provare alcuni rami in Markdown e altri in PDF, per vedere se cambia la capacità di ritrovare le informazioni.
+I rami PDF sono **opzionali**: i PDF sono documenti trovati online con diritti non liberi, quindi **non stanno nel git** (`data/*/*.pdf` è
+ignorato) e senza di loro il progetto funziona esattamente come prima (stessi rami, stesse misure, stessi test).
+
+**Come si attivano.** Metti i PDF in `data/regolamento/` e `data/corsi/` e scrivi `RAMI_PDF=1` nel `.env`. I documenti usati:
+- `data/regolamento/FSI_regole_di_base.pdf` — *Regole di base del gioco degli scacchi*, Federazione Scacchistica Italiana (10 pagine, sito federscacchi.it);
+- `data/corsi/deLuca_manualetto_di_scacchi.pdf` — *Manualetto di scacchi per bambini e non*, G. e S. de Luca (55 pagine, sito terrapura.it; il PDF dice "All rights reserved");
+- `data/corsi/Dispensa_corso_principianti.pdf` — dispensa di un corso per principianti (22 pagine, autore non indicato).
+
+**Come vengono letti** (`chess_tutor/pdf.py`): un PDF non ha sezioni, quindi si legge pagina per pagina con `pypdf`, si tolgono testate, numeri di
+pagina e righe dei diagrammi (nel manuale la scacchiera diventa testo senza senso), e si fanno pezzi di al più 1024 caratteri a fine frase,
+con "[titolo — p. N]" davanti. La fonte si cita come `file.pdf › p. 44`.
+
+**Cosa abbiamo misurato** (`python evals/confronta_formati.py --routing`, 24 domande scritte a mano leggendo i PDF in `evals/gold_pdf.json`, risultati in
+`evals/results/`). La risposta è giusta se il pezzo trovato contiene la frase del PDF che la contiene (vale per qualunque formato).
+Con 12 domande per ramo **una domanda in più o in meno è 0,08**: è rumore, si guardano le tendenze.
+
+*Prova A, controllata: lo stesso regolamento FSI come PDF e come Markdown con le sezioni (il testo è identico), ricerca ibrida.*
+
+| Formato | pezzi | testo nei primi 3 | risposta al 1° posto | tra i primi 3 | MRR |
+|---|---|---|---|---|---|
+| PDF, pezzi piccoli (max 300) | 40 | ~835 car. | 0,67 | 0,75 | 0,76 |
+| PDF, pezzi normali (max 1024) | 15 | ~2190 car. | 0,67 | **1,00** | 0,82 |
+| PDF, pezzi grandi (max 2000) | 10 | ~3106 car. | 0,83 | 0,92 | **0,90** |
+| Markdown (una sezione = un pezzo) | 43 | ~1093 car. | 0,42 | 0,75 | 0,62 |
+
+*Prova B, realistica: il ramo `corsi` (manuale e dispensa, con diagrammi rovinati), 12 domande.*
+
+| Ricerca | tra i primi 3 | MRR |
+|---|---|---|
+| solo significato (embedding) | 0,50 | 0,54 |
+| solo parole (BM25) | **1,00** | 0,76 |
+| ibrida (quella del progetto) | 0,83 | 0,72 |
+
+**Cosa si può dire e cosa no.**
+- Il formato da solo **non** fa la differenza: con pezzi di dimensione simile, il PDF tagliato a 300 caratteri e il Markdown con le sezioni danno
+  risultati vicini (0,75 contro 0,75 tra i primi 3). Pesa di più **quanto testo arriva con i primi 3 pezzi**: pezzi più grandi trovano di più,
+  ma portano da due a tre volte più testo nel prompt (più costo e più latenza). Per questo, nella prova A, il Markdown parte svantaggiato: le sue sezioni sono piccole.
+- Sui PDF veri e rovinati, la ricerca **per parole** ha battuto quella per significato (12 su 12 contro 6 su 12): i testi sono pieni di mosse e sigle, e gli embedding
+  se la cavano peggio. È un solo test su 12 domande: un'ipotesi, non una regola.
+- **Aggiungere rami che trattano gli stessi argomenti peggiora il router.** Con i rami PDF accesi, sul gold vecchio di 33 domande il routing scende da
+  0,93 a 0,83 e le citazioni da 0,96 a 0,85 (faithfulness 0,98 → 0,94, entro il rumore). Due casi su cinque sono un effetto del gold, scritto
+  quando i PDF non c'erano: il tutor ha risposto bene dal regolamento FSI, ma il gold si aspettava i file `.md`. Gli altri due sono errori veri (il router sceglie un
+  ramo PDF al posto di `openings` e perde metà della risposta). Per questo i rami PDF **restano spenti di default** e il gold vecchio non è stato ritoccato
+  (la prova è in `evals/results/scartati/`).
+- Il router, con quattro rami, sceglie un ramo accettabile 22 volte su 24 e il ramo PDF atteso 13 volte su 24 (per le domande sul regolamento va spesso su `rules`, che copre gli stessi temi: va bene).
+
+**Limiti dei PDF.** Le mosse scritte nei PDF **non** si possono verificare con `python-chess` (il controllo automatico vale solo per i nostri `.md`) e contengono refusi
+e figurine perse. In una prova il tutor ha mescolato due documenti: la sequenza di mosse veniva dalla dispensa a pagina 22 e la risposta citava il manuale a pagina 47.
+
 ## Altri comandi da provare
 Con l'ambiente attivo (o scrivendo il Python del `.venv` per esteso):
 ```powershell
@@ -192,11 +243,13 @@ python evals/prova_tutor.py                                      # 12 domande ve
 python evals/retest_sicurezza.py                                 # lo stesso attacco con le barriere spente e accese (modello vero)
 python -m chess_tutor.retrieval "Cosa vuol dire O-O-O?" --confronta   # i tre modi di ricerca uno sotto l'altro
 python evals/confronta_ricerca.py                                # tabella: solo significato, solo parole, ibrido
+python evals/confronta_formati.py --solo-gold                    # (con i PDF in data/) le frasi del gold PDF ci sono? offline, niente chiave
+python evals/confronta_formati.py --routing                      # md contro PDF + router (solo con i PDF; frazioni di centesimo)
 ```
 I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a domanda).
 
 ## Cartelle
-- `data/<ramo>/` — documenti `.md` scritti per il progetto (un ramo = una cartella)
+- `data/<ramo>/` — documenti `.md` scritti per il progetto (un ramo = una cartella); `data/regolamento/` e `data/corsi/` ospitano i PDF opzionali (non nel git)
 - `chess_tutor/` — il codice
 - `app.py` e `app_pages/` — l'interfaccia Streamlit
 - `mcp_server.py` — il server MCP · `examples/` — un client che lo usa e una dispensa di esempio
@@ -206,13 +259,16 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 ## Limiti noti (detti apertamente)
 - **Latenza**: p50 circa 4,9 secondi a risposta (era 5,5-6,7 prima di far fare la prima ricerca al codice): il budget di 4 secondi **ancora non è rispettato**; la fase più lunga resta la scrittura della risposta (circa 3 s). Costo circa $0,0003 a domanda.
 - **Nessuna memoria della conversazione**: ogni domanda è a sé ("e quello lungo?" non si capisce).
-- **Due soli rami** (regole e aperture) e documenti `.md` scritti per il progetto: l'esperimento md contro PDF e i rami tattiche, finali e strategia non sono stati fatti.
+- **Due soli rami in Markdown** (regole e aperture), scritti per il progetto, più due rami PDF opzionali (vedi sopra): i rami tattiche, finali e strategia in Markdown non sono stati fatti.
+- **Rami PDF**: i PDF non sono nel repository (diritti) e le mosse al loro interno non si verificano con `python-chess`; accesi insieme a `rules` e `openings` peggiorano il routing sul gold vecchio (−0,10).
 - **Le domande a due argomenti** vanno su un ramo solo (l'agente fa una ricerca obbligata in un ramo); nel gold sono i casi G24 e G26.
 - L'agente del tutor **non usa ancora** lo strumento che verifica le mosse (c'è nella scheda Scacchiera e nel server MCP).
 - Il gold ha 33 domande, scritte da una persona sola, e il giudice è uno solo (lo stesso modello che risponde): sotto 0.05 di differenza è rumore.
 - Il server MCP è provato con un host vero (VS Code con Copilot) e con un client Python, non con Claude Code né con Claude Desktop.
 
 ## Fonti e licenze
-I documenti in `data/` sono scritti per questo progetto. Eventuali documenti esterni (PDF) verranno elencati con fonte e licenza.
+I documenti `.md` in `data/` sono scritti per questo progetto. I tre PDF dei rami opzionali sono di terzi, **senza licenza libera dichiarata** (il manuale de Luca riporta
+"All rights reserved"): sono usati solo in locale per l'esperimento, non sono nel repository e non vanno ridistribuiti. Fonti: Federazione Scacchistica Italiana
+(*Regole di base del gioco degli scacchi*, 2015), Giacomo e Stefano de Luca (*Manualetto di scacchi per bambini e non*, 1997-2003) e una dispensa di corso senza autore indicato.
 
 

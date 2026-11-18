@@ -22,6 +22,7 @@ from datapizza.pipeline import IngestionPipeline
 from datapizza.vectorstores.qdrant import QdrantVectorstore
 
 from . import config
+from .pdf import LeggiPdf
 
 
 def nome_collection(ramo: str) -> str:
@@ -109,14 +110,16 @@ def prepara_collection(vs: QdrantVectorstore, ramo: str) -> str:
 
 
 def documenti_del_ramo(ramo: str, data_dir: Path | None = None) -> list[Path]:
-    return sorted(((data_dir or config.DATA_DIR) / ramo).glob("*.md"))
+    """I documenti del ramo: .md (sempre) e .pdf (solo nei rami PDF, i cui file non stanno nel git)."""
+    cartella = (data_dir or config.DATA_DIR) / ramo
+    return sorted([*cartella.glob("*.md"), *cartella.glob("*.pdf")], key=lambda p: p.name.lower())   # stesso ordine su Windows e Linux
 
 
 def indicizza_ramo(vs: QdrantVectorstore, embedder, ramo: str, data_dir: Path | None = None, verbose: bool = True) -> int:
     """Indicizza tutti i documenti di un ramo. Ritorna quanti documenti ha letto."""
     nome = prepara_collection(vs, ramo)
     titolatore = AggiungiTitolo()
-    pipeline = IngestionPipeline(
+    pipeline_md = IngestionPipeline(
         modules=[
             MDParser(),                                                  # legge il Markdown e ne riconosce le sezioni
             NodeSplitter(max_char=config.CHUNK_MAX_CHAR),                # una sezione = un pezzo
@@ -126,11 +129,19 @@ def indicizza_ramo(vs: QdrantVectorstore, embedder, ramo: str, data_dir: Path | 
         vector_store=vs,
         collection_name=nome,
     )
+    pipeline_pdf = IngestionPipeline(                                    # un PDF non ha sezioni: pezzi per pagina (chess_tutor/pdf.py)
+        modules=[LeggiPdf(), ChunkEmbedder(client=embedder, embedding_name=config.EMB_NAME)],
+        vector_store=vs,
+        collection_name=nome,
+    )
     files = documenti_del_ramo(ramo, data_dir)
     for f in files:
-        titolatore.carica(f)
         # `source_file` NON si compila da solo: va passato qui. Senza, niente citazioni delle fonti (S07/S11).
-        pipeline.run(file_path=str(f), metadata={"source_file": f.name, "ramo": ramo})
+        if f.suffix.lower() == ".pdf":
+            pipeline_pdf.run(file_path=str(f), metadata={"source_file": f.name, "ramo": ramo})
+        else:
+            titolatore.carica(f)
+            pipeline_md.run(file_path=str(f), metadata={"source_file": f.name, "ramo": ramo})
         if verbose:
             print(f"  indicizzato: {ramo}/{f.name}")
     return len(files)

@@ -1,0 +1,389 @@
+{
+  "prova_A_stesso_testo": {
+    "PDF, pezzi piccoli (max 300)": {
+      "statistiche": {
+        "pezzi": 40,
+        "media_caratteri": 257,
+        "max": 326,
+        "testo_nei_primi_3_pezzi": 835
+      },
+      "dense": {
+        "n": 12,
+        "primo": 0.5833333333333334,
+        "top3": 0.8333333333333334,
+        "mrr": 0.7291666666666666,
+        "sbagliate": [
+          "R01 (Chi muove per primo, il Bianco o il Nero?): risposta al posto 4",
+          "R08 (In cosa si trasforma un pedone che arriva in fondo alla scacchiera?): risposta non trovata"
+        ]
+      },
+      "bm25": {
+        "n": 12,
+        "primo": 0.6666666666666666,
+        "top3": 0.75,
+        "mrr": 0.7152777777777778,
+        "sbagliate": [
+          "R01 (Chi muove per primo, il Bianco o il Nero?): risposta non trovata",
+          "R06 (Come cattura un pedone?): risposta non trovata",
+          "R10 (Se tocco il re e poi una torre, cosa devo fare?): risposta al posto 4"
+        ]
+      },
+      "ibrido": {
+        "n": 12,
+        "primo": 0.6666666666666666,
+        "top3": 0.75,
+        "mrr": 0.7625000000000001,
+        "sbagliate": [
+          "R01 (Chi muove per primo, il Bianco o il Nero?): risposta al posto 5",
+          "R06 (Come cattura un pedone?): risposta al posto 5",
+          "R08 (In cosa si trasforma un pedone che arriva in fondo alla scacchiera?): risposta al posto 4"
+        ]
+      }
+    },
+    "PDF, pezzi normali (max 1024)": {
+      "statistiche": {
+        "pezzi": 15,
+        "media_caratteri": 640,
+        "max": 1035,
+        "testo_nei_primi_3_pezzi": 2190
+      },
+      "dense": {
+        "n": 12,
+        "primo": 0.5,
+        "top3": 1.0,
+        "mrr": 0.7361111111111112,
+        "sbagliate": []
+      },
+      "bm25": {
+        "n": 12,
+        "primo": 0.5833333333333334,
+        "top3": 1.0,
+        "mrr": 0.7777777777777778,
+        "sbagliate": []
+      },
+      "ibrido": {
+        "n": 12,
+        "primo": 0.6666666666666666,
+        "top3": 1.0,
+        "mrr": 0.8194444444444445,
+        "sbagliate": []
+      }
+    },
+    "PDF, pezzi grandi (max 2000)": {
+      "statistiche": {
+        "pezzi": 10,
+        "media_caratteri": 947,
+        "max": 1468,
+        "testo_nei_primi_3_pezzi": 3106
+      },
+      "dense": {
+        "n": 12,
+        "primo": 0.6666666666666666,
+        "top3": 0.9166666666666666,
+        "mrr": 0.7944444444444444,
+        "sbagliate": [
+          "R01 (Chi muove per primo, il Bianco o il Nero?): risposta al posto 5"
+        ]
+      },
+      "bm25": {
+        "n": 12,
+        "primo": 0.8333333333333334,
+        "top3": 1.0,
+        "mrr": 0.9027777777777778,
+        "sbagliate": []
+      },
+      "ibrido": {
+        "n": 12,
+        "primo": 0.8333333333333334,
+        "top3": 0.9166666666666666,
+        "mrr": 0.8958333333333334,
+        "sbagliate": [
+          "R01 (Chi muove per primo, il Bianco o il Nero?): risposta al posto 4"
+        ]
+      }
+    },
+    "Markdown (una sezione = un pezzo)": {
+      "statistiche": {
+        "pezzi": 43,
+        "media_caratteri": 218,
+        "max": 992,
+        "testo_nei_primi_3_pezzi": 1093
+      },
+      "dense": {
+        "n": 12,
+        "primo": 0.5,
+        "top3": 0.9166666666666666,
+        "mrr": 0.6666666666666666,
+        "sbagliate": [
+          "R11 (Quando finisce la partita per stallo?): risposta non trovata"
+        ]
+      },
+      "bm25": {
+        "n": 12,
+        "primo": 0.5,
+        "top3": 0.5833333333333334,
+        "mrr": 0.5916666666666667,
+        "sbagliate": [
+          "R01 (Chi muove per primo, il Bianco o il Nero?): risposta al posto 5",
+          "R06 (Come cattura un pedone?): risposta al posto 5",
+          "R09 (Quando perdo il diritto di arroccare?): risposta non trovata",
+          "R10 (Se tocco il re e poi una torre, cosa devo fare?): risposta non trovata",
+          "R11 (Quando finisce la partita per stallo?): risposta al posto 5"
+        ]
+      },
+      "ibrido": {
+        "n": 12,
+        "primo": 0.4166666666666667,
+        "top3": 0.75,
+        "mrr": 0.6236111111111111,
+        "sbagliate": [
+          "R01 (Chi muove per primo, il Bianco o il Nero?): risposta al posto 4",
+          "R09 (Quando perdo il diritto di arroccare?): risposta al posto 5",
+          "R11 (Quando finisce la partita per stallo?): risposta al posto 5"
+        ]
+      }
+    }
+  },
+  "prova_B_rami_pdf": {
+    "corsi": {
+      "statistiche": {
+        "pezzi": 124,
+        "media_caratteri": 685,
+        "max": 1062
+      },
+      "dense": {
+        "n": 12,
+        "primo": 0.4166666666666667,
+        "top3": 0.5,
+        "mrr": 0.5375,
+        "sbagliate": [
+          "C02 (Perché bisogna stare attenti allo stallo mentre si dà matto?): risposta al posto 4",
+          "C04 (Cos'è la regola del quadrato?): risposta al posto 4",
+          "C06 (Cos'è la forchetta del pedone?): risposta non trovata",
+          "C10 (Quando conviene avere due torri invece di una donna?): risposta al posto 5",
+          "C11 (Cos'è il matto affogato?): risposta non trovata",
+          "C12 (Si può dare matto con un cavallo solo e il re?): risposta al posto 4"
+        ]
+      },
+      "bm25": {
+        "n": 12,
+        "primo": 0.5833333333333334,
+        "top3": 1.0,
+        "mrr": 0.7638888888888888,
+        "sbagliate": []
+      },
+      "ibrido": {
+        "n": 12,
+        "primo": 0.5833333333333334,
+        "top3": 0.8333333333333334,
+        "mrr": 0.7152777777777778,
+        "sbagliate": [
+          "C06 (Cos'è la forchetta del pedone?): risposta al posto 4",
+          "C11 (Cos'è il matto affogato?): risposta non trovata"
+        ]
+      }
+    }
+  },
+  "routing": {
+    "corretti": 22,
+    "ramo_pdf_scelto": 13,
+    "totale": 24,
+    "dettaglio": [
+      {
+        "id": "R01",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R02",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R03",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R04",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R05",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R06",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R07",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R08",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules",
+          "regolamento"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R09",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R10",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R11",
+        "atteso": "regolamento",
+        "scelti": [
+          "rules",
+          "regolamento"
+        ],
+        "ok": true
+      },
+      {
+        "id": "R12",
+        "atteso": "regolamento",
+        "scelti": [
+          "regolamento"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C01",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C02",
+        "atteso": "corsi",
+        "scelti": [
+          "rules"
+        ],
+        "ok": false
+      },
+      {
+        "id": "C03",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C04",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C05",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C06",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C07",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C08",
+        "atteso": "corsi",
+        "scelti": [
+          "openings"
+        ],
+        "ok": false
+      },
+      {
+        "id": "C09",
+        "atteso": "corsi",
+        "scelti": [
+          "rules",
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C10",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C11",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      },
+      {
+        "id": "C12",
+        "atteso": "corsi",
+        "scelti": [
+          "corsi"
+        ],
+        "ok": true
+      }
+    ]
+  }
+}

@@ -44,3 +44,30 @@ BRANCHES: dict[str, Branch] = {b.key: b for b in [
            "Principi di apertura, Italiana, Spagnola, Siciliana, Francese, Gambetto di Donna, Londra, Indiana di Re, "
            "trappole e matti rapidi (matto del barbiere, matto del pazzo)."),
 ]}
+
+# Rami OPZIONALI con documenti PDF trovati online (Step 6, richiesta di Giuseppe: md contro PDF). I PDF non stanno nel git (diritti
+# non liberi, vedi README): il ramo esiste solo se RAMI_PDF=1 (nel .env o nell'ambiente) E la cartella data/<ramo>/ contiene PDF.
+# Senza, il progetto si comporta esattamente come prima (stessi rami, stesse misure, stessi test).
+RAMI_PDF: list[Branch] = [
+    Branch("regolamento", "Regolamento (PDF)",
+           "Regolamento di base della Federazione Scacchistica Italiana: obiettivo della partita, scacchiera e posizione iniziale, "
+           "movimento e cattura dei pezzi, presa en passant, promozione, arrocco, mosse legali e illegali, regola del pezzo "
+           "toccato, fine della partita (scaccomatto, stallo, patta, 50 mosse)."),
+    Branch("corsi", "Corsi per principianti (PDF)",
+           "Manuale e dispensa per principianti: matti elementari (matto in fondo, re e donna o re e torre contro re), finali di "
+           "pedone (regola del quadrato), temi tattici (forchetta, infilata, scoperta, doppio, matto affogato), controllo del "
+           "centro, valore e importanza dei pezzi, consigli per le mosse iniziali."),
+]
+
+
+def rami_attivi(base: dict[str, Branch], extra: list[Branch], data_dir: Path, abilitati: bool) -> dict[str, Branch]:
+    """I rami di `base` e, se `abilitati`, anche quelli di `extra` che hanno davvero dei PDF in data_dir/<ramo>/."""
+    rami = dict(base)
+    if abilitati:
+        for b in extra:
+            if any((data_dir / b.key).glob("*.pdf")):
+                rami[b.key] = b
+    return rami
+
+
+BRANCHES = rami_attivi(BRANCHES, RAMI_PDF, DATA_DIR, os.getenv("RAMI_PDF") == "1")
