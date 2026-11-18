@@ -4,9 +4,52 @@ Progetto finale del corso AITHO GenAI Academy (datapizza-ai 0.1.0). Un principia
 scacchi; un **router** capisce di cosa parla la domanda, un **agente** cerca **solo nei documenti del ramo giusto** (RAG a rami),
 risponde citando le fonti e dice "Non lo so" quando i documenti non bastano.
 
-Il progetto si costruisce **a step**. Questo README cresce con gli step.
+## Cosa serve
+- **Windows con PowerShell**: i comandi sono provati lì. Su Linux o macOS il Python dell'ambiente è `.venv/bin/python`.
+- **Python 3.12** già installato. Controlla con `python --version`. Se Windows risponde *"Python was not found"* è solo il collegamento
+  al Microsoft Store: installa Python 3.12 da python.org (spunta "Add python.exe to PATH") e riapri PowerShell.
+- **Git** e una **chiave OpenAI** (`OPENAI_API_KEY`). Senza chiave girano i test offline e la scheda Scacchiera; il resto no.
+- Docker Desktop **solo** per Phoenix e Grafana (opzionale).
 
-## Come funziona (stato attuale: Step 1c)
+## Installazione e primo avvio
+**1. Scarica il progetto in un percorso CORTO**, per esempio `C:\progetti`. Windows limita i percorsi a 260 caratteri: dentro una
+cartella dal percorso lungo l'installazione si ferma con `WinError 206` (è successo nella prova).
+```powershell
+cd C:\progetti
+git clone https://github.com/Ritas285/chess-tutor.git
+cd chess-tutor
+```
+**2. Crea l'ambiente e installa le dipendenze** (circa 1-2 minuti):
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+**3. Metti la chiave** (il file `.env` non va mai caricato su GitHub: è già ignorato):
+```powershell
+copy .env.example .env      # poi apri .env e scrivi la tua OPENAI_API_KEY dopo il segno =
+```
+**4. Controlla che tutto giri:**
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+Atteso: **291 passati** con la chiave. Senza chiave sono **284 passati e 7 saltati**: i 7 sono i test che chiamano il modello vero.
+
+**5. Avvia l'app:**
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run app.py      # poi apri http://localhost:8501
+```
+La prima domanda impiega qualche secondo, perché crea l'indice dei documenti (frazioni di centesimo di embedding). Clicca un
+suggerimento, per esempio *"Come funziona l'arrocco?"*: la risposta cita la fonte e sotto trovi "Come ha lavorato". Senza chiave
+l'app lo dice e non si rompe.
+
+> Nei comandi di questo documento, `python` è il Python del `.venv`: scrivilo per esteso (`.\.venv\Scripts\python.exe`) oppure attiva
+> l'ambiente con `.\.venv\Scripts\Activate.ps1` (se PowerShell lo blocca: `Set-ExecutionPolicy -Scope Process Bypass`).
+
+*Provato così il 19 novembre 2026: clone da GitHub in un percorso corto, ambiente nuovo, installazione in 78 secondi senza errori;
+senza chiave 284 test passati e 7 saltati e l'app che spiega cosa fare; con la chiave 291 passati, la domanda sull'arrocco con la
+fonte, il trucco fermato a costo zero, il client MCP e le misure.*
+
+## Come funziona (RAG a rami)
 ```
 domanda ─► router (LLM, output strutturato) ─► agente con SOLO il tool del ramo scelto ─► risposta con fonti
               │ rami scelti / fuori tema            └─ cerca_<ramo>: ricerca ibrida (significato + parole + RRF)
@@ -121,7 +164,8 @@ con la richiesta *"Usa lo strumento verifica_mossa del server chess-tutor. Nella
 mossa Ce4?"*, Copilot ha scelto lo strumento, ha chiesto il permesso (**Allow**) e ha risposto: Cf3 legale, Ce4 non legale. Si ripete
 con gli stessi passi; `verifica_mossa` e `mosse_legali` non richiedono la chiave. Non è provato con Claude Code né con Claude Desktop.
 
-## Se sviluppi con un coding agent (Step 3)Il progetto è pensato per essere modificato anche da un assistente (Copilot, Claude Code, Cursor): `AGENTS.md` dice cosa è il progetto,
+## Se sviluppi con un coding agent (Step 3)
+Il progetto è pensato per essere modificato anche da un assistente (Copilot, Claude Code, Cursor): `AGENTS.md` dice cosa è il progetto,
 quali comandi lanciare prima di dire "fatto", dove sta ogni cosa, le **regole che non si violano** e gli errori già fatti. Le
 procedure ricorrenti sono quattro skill in `.claude/skills/` (`add-rag-branch`, `write-chess-content`, `run-evals`, `security-retest`).
 `.mcp.json` (Claude Code) e `.vscode/mcp.json` (VS Code/Copilot) collegano il server MCP del progetto, così l'assistente può
@@ -133,14 +177,8 @@ Linux o macOS usa `.venv/bin/python`.
 python evals/verifica_contenuti.py    # le mosse scritte nei documenti di data/ sono legali? (python-chess, nessuna chiave)
 ```
 
-## Installazione (Windows, PowerShell, Python 3.12)```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-copy .env.example .env        # poi apri .env e inserisci la tua OPENAI_API_KEY
-```
-
-## Provarlo
+## Altri comandi da provare
+Con l'ambiente attivo (o scrivendo il Python del `.venv` per esteso):
 ```powershell
 python -m pytest -q                                              # test (senza chiave girano quelli offline)
 python -m chess_tutor.tutor "Come funziona l'arrocco?"           # il tutor risponde, con fonti e costo
@@ -162,6 +200,15 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 - `mcp_server.py` — il server MCP · `examples/` — un client che lo usa e una dispensa di esempio
 - `evals/` — il gold (`gold.json`), lo script `run_evals.py`, i risultati salvati (`results/`) e altre prove
 - `tests/` — i test
+
+## Limiti noti (detti apertamente)
+- **Latenza**: p50 circa 5,5-5,9 secondi a risposta (router + agente): il budget di 4 secondi **non è rispettato**. Costo circa $0,0003-0,0004 a domanda.
+- **Nessuna memoria della conversazione**: ogni domanda è a sé ("e quello lungo?" non si capisce).
+- **Due soli rami** (regole e aperture) e documenti `.md` scritti per il progetto: l'esperimento md contro PDF e i rami tattiche, finali e strategia non sono stati fatti.
+- **Le domande a due argomenti** vanno su un ramo solo (l'agente fa una ricerca obbligata in un ramo); nel gold sono i casi G24 e G26.
+- L'agente del tutor **non usa ancora** lo strumento che verifica le mosse (c'è nella scheda Scacchiera e nel server MCP).
+- Il gold ha 33 domande, scritte da una persona sola, e il giudice è uno solo (lo stesso modello che risponde): sotto 0.05 di differenza è rumore.
+- Il server MCP è provato con un host vero (VS Code con Copilot) e con un client Python, non con Claude Code né con Claude Desktop.
 
 ## Fonti e licenze
 I documenti in `data/` sono scritti per questo progetto. Eventuali documenti esterni (PDF) verranno elencati con fonte e licenza.
