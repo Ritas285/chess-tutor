@@ -68,6 +68,20 @@ modifica vale se la faithfulness sale di almeno 0.03, la recall non scende di pi
 domande una differenza sotto 0.05 è **rumore**. Limiti: gold scritto da una persona sola; il giudice è lo stesso modello che
 risponde e da un run all'altro può cambiare voto; un solo giudice.
 
+## Interfaccia (Step 1h)
+Un'app Streamlit con due pagine:
+- **Chiedi al tutor**: chat con suggerimenti (uno è un tentativo di injection, per vedere il guardrail fermarlo a costo zero).
+  Ogni risposta mostra "Come ha lavorato" (rami scelti, strumenti, **fonti**, interventi dei guardrail) e tempo, token e costo.
+  Le domande bloccate e quelle fuori tema hanno un riquadro a parte. Ogni domanda è a sé: la memoria non c'è ancora.
+- **Quiz da un tuo documento**: allega un `.md`, `.txt` o `.pdf`, genera le domande, rispondi e verifica. Dopo la verifica si vede la
+  frase del documento su cui si basa la domanda.
+
+```powershell
+streamlit run app.py          # poi apri http://localhost:8501
+```
+Serve la chiave nel file `.env`; senza chiave l'app lo dice e non si rompe. L'indice dei documenti si crea al primo avvio (qualche
+secondo). Per trace e metriche (Phoenix, Grafana) vedi la sezione Osservabilità.
+
 ## Server MCP (Step 2a, lezione S13)
 Il tutor è anche un **server MCP**: un altro programma (un *host*: Claude Code, VS Code, Cursor, un client Python…) può usarlo
 senza riscrivere niente. L'host fa da modello; il server dà conoscenza e verifiche.
@@ -119,7 +133,8 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 ## Cartelle
 - `data/<ramo>/` — documenti `.md` scritti per il progetto (un ramo = una cartella)
 - `chess_tutor/` — il codice
-- `mcp_server.py` — il server MCP · `examples/` — un client che lo usa
+- `app.py` e `app_pages/` — l'interfaccia Streamlit
+- `mcp_server.py` — il server MCP · `examples/` — un client che lo usa e una dispensa di esempio
 - `evals/` — il gold (`gold.json`), lo script `run_evals.py`, i risultati salvati (`results/`) e altre prove
 - `tests/` — i test
 

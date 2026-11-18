@@ -7,5 +7,6 @@ opentelemetry-exporter-otlp-proto-http
 prometheus-client
 mcp>=2
 pypdf
+streamlit>=1.57
 python-dotenv
 pytest

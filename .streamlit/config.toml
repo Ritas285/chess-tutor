@@ -1,0 +1,3 @@
+[browser]
+# Niente statistiche d'uso inviate a Streamlit (e niente richiesta di e-mail al primo avvio).
+gatherUsageStats = false

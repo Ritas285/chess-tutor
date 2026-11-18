@@ -126,16 +126,24 @@ QUIZ_PROMPT = (
 )
 
 
-def leggi_file(percorso: str | Path) -> str:
-    """Il testo di un file allegato: Markdown, testo semplice o PDF (con pypdf, come nelle demo del corso)."""
-    p = Path(percorso)
-    estensione = p.suffix.lower()
+def leggi_allegato(nome: str, dati: bytes) -> str:
+    """Il testo di un allegato già in memoria (es. caricato da un browser): Markdown, testo semplice o PDF (con pypdf, come nelle
+    demo del corso). Un PDF danneggiato solleva l'errore di pypdf; uno di sole immagini (scansione) restituisce testo vuoto."""
+    estensione = Path(nome).suffix.lower()
     if estensione == ".pdf":
+        from io import BytesIO
+
         from pypdf import PdfReader
-        return "\n\n".join((pagina.extract_text() or "") for pagina in PdfReader(str(p)).pages)
+        return "\n\n".join((pagina.extract_text() or "") for pagina in PdfReader(BytesIO(dati)).pages)
     if estensione in (".md", ".txt"):
-        return p.read_text(encoding="utf-8")
+        return dati.decode("utf-8", errors="replace")
     raise ValueError(f"formato non supportato: {estensione or 'senza estensione'} (usa .md, .txt o .pdf)")
+
+
+def leggi_file(percorso: str | Path) -> str:
+    """Il testo di un file allegato su disco (vedi `leggi_allegato`)."""
+    p = Path(percorso)
+    return leggi_allegato(p.name, p.read_bytes())
 
 
 def _norm(t: str) -> str:
