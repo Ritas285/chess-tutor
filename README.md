@@ -51,8 +51,8 @@ fonte, il trucco fermato a costo zero, il client MCP e le misure.*
 
 ## Come funziona (RAG a rami)
 ```
-domanda ─► router (LLM, output strutturato) ─► agente con SOLO il tool del ramo scelto ─► risposta con fonti
-              │ rami scelti / fuori tema            └─ cerca_<ramo>: ricerca ibrida (significato + parole + RRF)
+domanda ─► router (LLM) ─► ricerca nei rami scelti (fatta dal CODICE) ─► agente: risposta con fonti
+              │ rami scelti / fuori tema        └─ ricerca ibrida (significato + parole + RRF)
               ▼
         fuori tema: risposta fissa, nessuna ricerca
 ```
@@ -61,9 +61,11 @@ domanda ─► router (LLM, output strutturato) ─► agente con SOLO il tool d
 - **Ricerca** (`chess_tutor/retrieval.py`, S08): per **significato** (embedding), per **parole** (BM25) e **ibrida** (RRF).
 - **Router** (`chess_tutor/router.py`): una chiamata al modello che compila un modulo (Pydantic): la domanda riguarda gli scacchi?
   in quali rami cercare? Il prompt è stato scelto misurando 5 varianti.
-- **Tutor** (`chess_tutor/tutor.py`, S03/S11): prompt di sistema + agente datapizza-ai con un tool per ramo. La prima ricerca
-  la **impone il codice** (`tool_choice="required_first"`): con "auto" il modello rispondeva a memoria su domande fuori corpus.
-  L'agente non ha nessuno strumento con effetti verso l'esterno (minimo privilegio, S15).
+- **Tutor** (`chess_tutor/tutor.py`, S03/S11): prompt di sistema + agente datapizza-ai con un tool per ramo. La **prima ricerca
+  la fa il codice** nei rami scelti dal router (sanificata come sempre) e i passaggi vanno sotto la domanda: il modello non può rispondere a
+  memoria (con "auto" lo faceva su domande fuori corpus) e si risparmia un giro verso il modello, il primo, che serviva solo a decidere un
+  tool già deciso dal codice (**p50 da 6,7 a 4,9 secondi**, misurato). L'agente può comunque cercare ancora con i suoi strumenti, e non ha
+  nessuno strumento con effetti verso l'esterno (minimo privilegio, S15). Per tornare al vecchio percorso: `Tutor(..., ricerca_iniziale=False)`.
 - **Rami** (`chess_tutor/config.py`): `rules` (regole e notazione) e `openings` (aperture). Aggiungere un ramo = una riga in
   `config.py` + una cartella in `data/` con i documenti `.md`.
 
@@ -202,7 +204,7 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 - `tests/` — i test
 
 ## Limiti noti (detti apertamente)
-- **Latenza**: p50 circa 5,5-5,9 secondi a risposta (router + agente): il budget di 4 secondi **non è rispettato**. Costo circa $0,0003-0,0004 a domanda.
+- **Latenza**: p50 circa 4,9 secondi a risposta (era 5,5-6,7 prima di far fare la prima ricerca al codice): il budget di 4 secondi **ancora non è rispettato**; la fase più lunga resta la scrittura della risposta (circa 3 s). Costo circa $0,0003 a domanda.
 - **Nessuna memoria della conversazione**: ogni domanda è a sé ("e quello lungo?" non si capisce).
 - **Due soli rami** (regole e aperture) e documenti `.md` scritti per il progetto: l'esperimento md contro PDF e i rami tattiche, finali e strategia non sono stati fatti.
 - **Le domande a due argomenti** vanno su un ramo solo (l'agente fa una ricerca obbligata in un ramo); nel gold sono i casi G24 e G26.

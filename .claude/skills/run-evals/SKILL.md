@@ -8,7 +8,7 @@ description: Lancia le valutazioni (routing, retrieval, risposte, verifica, quiz
 2. Per la verifica delle risposte: `python evals/valuta_verifica.py`; per il generatore di quiz: `python evals/valuta_quiz.py`.
 3. **Regola A/B** (stesso gold prima e dopo, **una modifica per volta**): la modifica vale solo se la faithfulness sale di almeno 0.03, la
    recall non scende di più di 0.02 e il costo resta nel budget (≤ $0,005 a domanda). Il budget di latenza è p50 ≤ 4 s: **oggi non è
-   rispettato** (circa 5,5-5,9 s), non fingere il contrario.
+   rispettato** (circa 4,9 s dopo la ricerca iniziale fatta dal codice), non fingere il contrario.
 4. Su 33 domande una differenza **sotto 0.05 è rumore**: non cantare vittoria. Il giudice è unico e cambia voto da un run all'altro.
 5. Guarda gli **ID sbagliati** e le motivazioni, non solo le medie. Una misura che "migliora" senza migliorare le risposte è un campanello
    (è già successo: routing a 1.0 con più costo e nessuna risposta migliore).

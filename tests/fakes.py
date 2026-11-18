@@ -67,6 +67,10 @@ class ScriptedClient(Client):
                 system_prompt=None, **kw):
         results = self._tool_results(memory, input)
         usage = TokenUsage(prompt_tokens=100, completion_tokens=20)
+        if not results and tools and "RICERCA INIZIALE" in self._question(input, memory):
+            # I passaggi sono già sotto la domanda (Tutor.ricerca_iniziale): come il modello vero, risponde senza chiamare lo strumento.
+            riga = next((r for r in self._question(input, memory).splitlines() if r.startswith("[") and "›" in r), "[fonte]")
+            return ClientResponse(content=[TextBlock(content=f"Risposta di prova. Fonte: {riga}")], usage=usage)
         if not results and tools:
             tool = tools[0]
             self.calls.append(tool.name)
@@ -95,6 +99,8 @@ class ModelloIngenuo(ScriptedClient):
 
     def _invoke(self, input, tools=None, memory=None, **kw):
         risultati = self._tool_results(memory, input)
+        if not risultati and "RICERCA INIZIALE" in self._question(input, memory):
+            risultati = [self._question(input, memory)]      # i passaggi stanno sotto la domanda: il modello ingenuo li legge lo stesso
         if not risultati:
             return super()._invoke(input, tools=tools, memory=memory, **kw)
         link = re.findall(r"https?://[^\s)\"']+", str(risultati[-1]))

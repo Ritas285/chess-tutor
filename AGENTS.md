@@ -26,7 +26,7 @@ La chiave sta in `.env` (`OPENAI_API_KEY`). I comandi con "chiave" costano frazi
 - `chess_tutor/config.py` rami e modelli (un ramo nuovo = una voce in `BRANCHES` + una cartella in `data/`)
 - `ingest.py` caricamento e chunking dei `.md` (parser → sezioni → titolo davanti → embedding → Qdrant)
 - `retrieval.py` ricerca ibrida per ramo: significato + parole (BM25) + fusione RRF
-- `router.py` di cosa parla la domanda → quali rami · `tutor.py` Tutor: guardrail → router → agente → pulizia output
+- `router.py` di cosa parla la domanda → quali rami · `tutor.py` Tutor: guardrail → router → ricerca iniziale nel codice → agente → pulizia output
 - `guardrails.py` difese (domanda, documenti, risposta, citazioni) · `audit.py` registro in `logs/audit.jsonl`
 - `quiz.py` verifica delle risposte e quiz da un documento · `chess_tools.py` mosse con python-chess (deterministico)
 - `contenuti.py` controlla le mosse scritte nei documenti · `valutazione.py` metriche, giudice LLM, confronto A/B
