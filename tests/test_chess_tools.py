@@ -199,3 +199,40 @@ def test_il_motivo_non_e_mai_quello_di_un_altro_pezzo():
     assert "Non riesco a leggere" in ct.controlla_mossa(INIZIO, "zz9").messaggio and "MAIUSCOLE" not in ct.controlla_mossa(INIZIO, "zz9").messaggio
 
 
+
+
+# ---------- più mosse di fila, separate da virgola ----------
+def test_una_sequenza_si_gioca_in_ordine():
+    s = ct.gioca_sequenza(INIZIO, "e4, e5, Cf3, Cc6")
+    assert s.mosse == ["e4", "e5", "Cf3", "Cc6"] and len(s.legali) == 4 and s.errore is None
+    assert [e.mossa for e in s.legali] == ["e4", "e5", "Cf3", "Cc6"]
+    # ogni mossa parte dalla posizione lasciata dalla precedente: il Nero muove dopo il Bianco
+    assert chess.Board(s.legali[-1].fen_dopo).fen() == chess.Board().fen().replace("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                                                                                      "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3")
+
+
+def test_la_sequenza_si_ferma_alla_prima_mossa_non_legale_e_dice_quale():
+    s = ct.gioca_sequenza(INIZIO, "e4, e4, Cf3")                           # la seconda è del Nero: un pedone nero non va in e4
+    assert len(s.legali) == 1 and len(s.esiti) == 2                       # la terza non si prova
+    quale, testo, esito = s.errore
+    assert quale == 2 and testo == "e4" and "NON legale" in esito.messaggio
+
+
+def test_la_sequenza_accetta_numerazione_spazi_e_parti_vuote():
+    assert ct.gioca_sequenza(INIZIO, "1.e4, e5, 2.Cf3").mosse == ["e4", "e5", "Cf3"]
+    assert ct.gioca_sequenza(INIZIO, " e4 ,, e5 ; Cf3 \n Cc6 ,").mosse == ["e4", "e5", "Cf3", "Cc6"]
+    assert ct.gioca_sequenza(INIZIO, "").esiti == [] and ct.gioca_sequenza(INIZIO, " , ,").mosse == []
+
+
+def test_la_sequenza_del_matto_del_barbiere_finisce_con_il_matto():
+    s = ct.gioca_sequenza(INIZIO, "e4, e5, Ac4, Cc6, Dh5, Cf6, Dxf7")
+    assert len(s.legali) == 7 and s.errore is None and "SCACCO MATTO" in s.legali[-1].messaggio
+
+
+def test_una_sequenza_con_una_posizione_sbagliata_non_solleva_eccezioni():
+    s = ct.gioca_sequenza("boh", "e4, e5")
+    assert s.errore is not None and "FEN non valida" in s.errore[2].messaggio and len(s.esiti) == 1
+
+
+def test_una_sequenza_con_una_mossa_sola_e_come_la_mossa_singola():
+    assert ct.gioca_sequenza(INIZIO, "Cf3").legali[0].mossa == ct.controlla_mossa(INIZIO, "Cf3").mossa

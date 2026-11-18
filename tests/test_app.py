@@ -4,6 +4,7 @@ Perché serve: in una versione precedente la chat andava in errore su una domand
 perché provavano il tutor e non l'interfaccia. Qui si prova l'interfaccia, compresi i casi "difficili".
 """
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -238,8 +239,12 @@ PAGINA_SCACCHIERA = "app_pages/scacchiera.py"
 
 
 def pagina_scacchiera():
-    at = AppTest.from_file(APP, default_timeout=20).run()
-    return at.switch_page(PAGINA_SCACCHIERA).run()
+    """La scheda non usa il modello, ma per raggiungerla parte prima la pagina della chat: con un tutor FINTO, così i test non
+    fanno nessuna chiamata di rete (prima partiva la creazione del tutor vero con la chiave finta: rifiutata, e nessuno se ne accorgeva)."""
+    finto = SimpleNamespace(client=SimpleNamespace(model_name="finto"))
+    with patch.object(webapp, "get_tutor", return_value=finto):
+        at = AppTest.from_file(APP, default_timeout=20).run()
+        return at.switch_page(PAGINA_SCACCHIERA).run()
 
 
 def test_la_scacchiera_si_vede_e_funziona_anche_senza_chiave(monkeypatch):
@@ -275,3 +280,28 @@ def test_un_esempio_carica_la_posizione_e_la_mossa_suggerita_da_matto():
     at.text_input(key="mossa").set_value("Dxf7").run()
     assert not at.exception and "SCACCO MATTO" in unisci(at.success)
 
+
+
+def test_piu_mosse_con_la_virgola_si_vedono_una_alla_volta():
+    at = pagina_scacchiera()
+    at.text_input(key="mossa").set_value("e4, e5, Cf3, Cc6").run()
+    assert not at.exception and at.slider[0].value == 4 and at.slider[0].max == 4        # all'inizio mostra l'ultima
+    assert "Mossa 4: Mossa legale: Cc6" in unisci(at.success)
+    at.slider[0].set_value(1).run()                                                      # torno alla prima, "e4"
+    assert not at.exception and "Mossa 1: Mossa legale: e4" in unisci(at.success)
+    assert "**e4**" in unisci(at.caption)
+    assert len(at.get("imgs")) == 2 or len(at.get("image")) == 2                         # prima e dopo la mossa 1
+
+
+def test_una_sequenza_che_si_ferma_dice_quale_mossa_non_va():
+    at = pagina_scacchiera()
+    at.text_input(key="mossa").set_value("e4, e4, Cf3").run()
+    assert not at.exception and "Mossa 2 «e4»: NON legale" in unisci(at.error)
+    assert at.text_input(key="mossa").value == "e4, e4, Cf3" and not at.slider            # una sola mossa valida: niente cursore
+    assert "Mossa legale: e4" in unisci(at.success)
+
+
+def test_una_sola_mossa_non_mostra_il_cursore():
+    at = pagina_scacchiera()
+    at.text_input(key="mossa").set_value("Cf3").run()
+    assert not at.exception and not at.slider and "Mossa legale: Cf3" in unisci(at.success)

@@ -10,7 +10,7 @@ st.set_page_config(page_title="Chess Tutor", page_icon="♟️", layout="wide")
 pagina = st.navigation([
     st.Page("app_pages/chat.py", title="Chiedi al tutor", icon="💬", default=True),
     st.Page("app_pages/quiz.py", title="Quiz da un documento", icon="📝"),
-    st.Page("app_pages/scacchiera.py", title="Scacchiera", icon=":material/chess:"),
+    st.Page("app_pages/scacchiera.py", title="Scacchiera", icon="🔲"),
 ], position="top")
 pagina.run()
 

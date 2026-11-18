@@ -1,4 +1,4 @@
-﻿# ♟️ Chess Tutor — tutor di scacchi per principianti
+# ♟️ Chess Tutor — tutor di scacchi per principianti
 
 Progetto finale del corso AITHO GenAI Academy (datapizza-ai 0.1.0). Un principiante fa domande su regole e aperture degli
 scacchi; un **router** capisce di cosa parla la domanda, un **agente** cerca **solo nei documenti del ramo giusto** (RAG a rami),
@@ -87,7 +87,7 @@ La terza scheda verifica una mossa su una posizione con `python-chess` (nessun m
 Disegna la scacchiera **prima e dopo** la mossa, spiega **perché** una mossa non è legale (casa occupata, pezzo in mezzo, re sotto
 scacco, arrocco impossibile…) e legge la notazione italiana (C cavallo, A alfiere, T torre, D donna, R re), le coordinate (`e2e4`)
 e, come ripiego, quella inglese. Le lettere dei pezzi vanno **maiuscole** (`Cf3`): `cf3` minuscolo non è un cavallo, e il messaggio lo spiega. Funziona anche senza chiave. Lo stesso strumento è nel server MCP (`verifica_mossa`, `mosse_legali`).
-L'agente del tutor non lo usa ancora.
+Si possono scrivere **più mosse separate da virgola** (`e4, e5, Cf3, Cc6`): si giocano in ordine, con un cursore per vederle una alla volta, e ci si ferma alla prima non legale dicendo quale. L'agente del tutor non lo usa ancora.
 
 ## Server MCP (Step 2a, lezione S13)
 Il tutor è anche un **server MCP**: un altro programma (un *host*: Claude Code, VS Code, Cursor, un client Python…) può usarlo

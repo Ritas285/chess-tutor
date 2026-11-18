@@ -219,6 +219,39 @@ def controlla_mossa(fen: str, mossa: str) -> EsitoMossa:
     return EsitoMossa(True, f"Mossa legale: {san} — {nome} del {chi}{dettaglio}.", san, b.fen(), (m.from_square, m.to_square))
 
 
+@dataclass
+class Sequenza:
+    """Più mosse una dopo l'altra (separate da virgole), giocate in ordine a partire da una posizione. Si ferma alla prima non legale."""
+    mosse: list[str]                      # le mosse lette dal testo, nell'ordine
+    esiti: list[EsitoMossa]               # un esito per ogni mossa PROVATA (l'ultimo è quello non legale, se c'è)
+
+    @property
+    def legali(self) -> list[EsitoMossa]:
+        return [e for e in self.esiti if e.legale]
+
+    @property
+    def errore(self) -> tuple[int, str, EsitoMossa] | None:
+        """(numero della mossa da 1, testo scritto, esito) della prima mossa non legale; None se sono tutte legali."""
+        if self.esiti and not self.esiti[-1].legale:
+            return len(self.esiti), self.mosse[len(self.esiti) - 1], self.esiti[-1]
+        return None
+
+
+def gioca_sequenza(fen: str, mosse: str) -> Sequenza:
+    """"e4, e5, Cf3" -> le tre mosse giocate in ordine. Si accettano virgole, punti e virgola o a capo, e la numerazione ("1.e4, e5, 2.Cf3").
+    Ogni mossa è controllata sulla posizione lasciata dalla precedente; alla prima non legale ci si ferma e si dice perché."""
+    parti = [re.sub(r"^\d+\.+\s*", "", p.strip()) for p in re.split(r"[,;\n]+", mosse or "")]
+    parti = [p for p in parti if p]
+    esiti: list[EsitoMossa] = []
+    corrente = fen
+    for parte in parti:
+        esito = controlla_mossa(corrente, parte)
+        esiti.append(esito)
+        if not esito.legale:
+            break
+        corrente = esito.fen_dopo
+    return Sequenza(parti, esiti)
+
 def verifica_mossa(fen: str, mossa: str) -> str:
     """Come `controlla_mossa`, ma restituisce solo il testo (per l'MCP e per l'agente: un errore diventa un messaggio, non un'eccezione)."""
     return controlla_mossa(fen, mossa).messaggio
