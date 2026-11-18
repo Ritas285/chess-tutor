@@ -70,7 +70,7 @@ def test_la_chat_risponde_con_fonti_e_mostra_come_ha_lavorato(ricerche):
     t = tutor_finto(ricerche)
     with patch.object(webapp, "get_tutor", return_value=t):
         at = AppTest.from_file(APP, default_timeout=20).run()
-        assert not at.exception and at.title[0].value == "Chess Tutor"
+        assert not at.exception and at.title[0].value == "♟️ Chess Tutor"
         assert len(at.pills[0].options) == 3                          # suggerimenti prima della prima domanda
         at.chat_input[0].set_value("Come funziona l'arrocco?").run()
     assert not at.exception
@@ -147,7 +147,7 @@ def pagina_quiz(t):
 def test_il_quiz_parte_senza_allegato_con_il_pulsante_spento(ricerche):
     with patch.object(webapp, "get_tutor", return_value=tutor_finto(ricerche, client_quiz())):
         at = pagina_quiz(None)
-    assert not at.exception and at.title[0].value == "Quiz da un tuo documento"
+    assert not at.exception and at.title[0].value == "📝 Quiz da un tuo documento"
     assert at.button(key="genera").disabled is True
 
 
@@ -228,5 +228,6 @@ def test_leggi_allegato_da_byte(ricerche):
     assert quiz.leggi_allegato("a.md", "# Titolo\nCiao è".encode("utf-8")).startswith("# Titolo")
     with pytest.raises(ValueError, match="formato non supportato"):
         quiz.leggi_allegato("a.exe", b"MZ")
+
 
 

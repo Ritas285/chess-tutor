@@ -1,4 +1,4 @@
-# ♟️ Chess Tutor — tutor di scacchi per principianti
+﻿# ♟️ Chess Tutor — tutor di scacchi per principianti
 
 Progetto finale del corso AITHO GenAI Academy (datapizza-ai 0.1.0). Un principiante fa domande su regole e aperture degli
 scacchi; un **router** capisce di cosa parla la domanda, un **agente** cerca **solo nei documenti del ramo giusto** (RAG a rami),
@@ -69,7 +69,7 @@ domande una differenza sotto 0.05 è **rumore**. Limiti: gold scritto da una per
 risponde e da un run all'altro può cambiare voto; un solo giudice.
 
 ## Interfaccia (Step 1h)
-Un'app Streamlit con due pagine:
+Un'app Streamlit a pagina larga con due schede in alto (tema scacchiera, chiaro o scuro dalle impostazioni):
 - **Chiedi al tutor**: chat con suggerimenti (uno è un tentativo di injection, per vedere il guardrail fermarlo a costo zero).
   Ogni risposta mostra "Come ha lavorato" (rami scelti, strumenti, **fonti**, interventi dei guardrail) e tempo, token e costo.
   Le domande bloccate e quelle fuori tema hanno un riquadro a parte. Ogni domanda è a sé: la memoria non c'è ancora.
@@ -140,3 +140,4 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 
 ## Fonti e licenze
 I documenti in `data/` sono scritti per questo progetto. Eventuali documenti esterni (PDF) verranno elencati con fonte e licenza.
+

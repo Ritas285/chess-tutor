@@ -3,7 +3,7 @@ import streamlit as st
 from chess_tutor import quiz as quizmod
 from chess_tutor import webapp
 
-st.title("Quiz da un tuo documento")
+st.title("📝 Quiz da un tuo documento")
 st.caption("Allega appunti o una dispensa (.md, .txt, .pdf). Il tutor scrive domande **solo** dal testo e ciascuna si appoggia a "
            "una frase del documento: se la frase non si ritrova, la domanda viene scartata.")
 
