@@ -114,8 +114,14 @@ python evals/valuta_quiz.py                   # 3 documenti: domande valide, sos
 ```
 Negli host il `command` deve puntare al Python del `.venv` (`...\.venv\Scripts\python.exe`) e `args` al percorso assoluto di `mcp_server.py`.
 
-## Se sviluppi con un coding agent (Step 3)
-Il progetto è pensato per essere modificato anche da un assistente (Copilot, Claude Code, Cursor): `AGENTS.md` dice cosa è il progetto,
+### Provato con un host vero: VS Code e Copilot (Step 2c)
+Il server è stato usato da VS Code (1.146) con Copilot, senza cambiare una riga: aprendo il progetto e `.vscode/mcp.json`, il pulsante
+**Start** sopra `chess-tutor` lancia `.venv/Scripts/python.exe mcp_server.py` e lo stato diventa **Running**. Nella chat di Copilot,
+con la richiesta *"Usa lo strumento verifica_mossa del server chess-tutor. Nella posizione iniziale (start) è legale la mossa Cf3? E la
+mossa Ce4?"*, Copilot ha scelto lo strumento, ha chiesto il permesso (**Allow**) e ha risposto: Cf3 legale, Ce4 non legale. Si ripete
+con gli stessi passi; `verifica_mossa` e `mosse_legali` non richiedono la chiave. Non è provato con Claude Code né con Claude Desktop.
+
+## Se sviluppi con un coding agent (Step 3)Il progetto è pensato per essere modificato anche da un assistente (Copilot, Claude Code, Cursor): `AGENTS.md` dice cosa è il progetto,
 quali comandi lanciare prima di dire "fatto", dove sta ogni cosa, le **regole che non si violano** e gli errori già fatti. Le
 procedure ricorrenti sono quattro skill in `.claude/skills/` (`add-rag-branch`, `write-chess-content`, `run-evals`, `security-retest`).
 `.mcp.json` (Claude Code) e `.vscode/mcp.json` (VS Code/Copilot) collegano il server MCP del progetto, così l'assistente può
