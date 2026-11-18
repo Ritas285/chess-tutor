@@ -166,6 +166,16 @@ con la richiesta *"Usa lo strumento verifica_mossa del server chess-tutor. Nella
 mossa Ce4?"*, Copilot ha scelto lo strumento, ha chiesto il permesso (**Allow**) e ha risposto: Cf3 legale, Ce4 non legale. Si ripete
 con gli stessi passi; `verifica_mossa` e `mosse_legali` non richiedono la chiave. Non è provato con Claude Code né con Claude Desktop.
 
+Sono stati provati con Copilot anche gli strumenti che usano la RAG:
+- `verifica_risposta` con *"Domanda: «Come si muove il cavallo?». Risposta dell'allievo: «Il cavallo si muove in diagonale.»"* → esito **errata**,
+  con le fonti `01_pezzi_e_movimenti.md › Il cavallo` e `› Il re`;
+- `cerca_conoscenza` con ramo `rules` e la domanda «Come funziona l'arrocco?» → il passaggio `[03_mosse_speciali.md › L'arrocco]`.
+
+Il modello piccolo di Copilot è **incostante** nel trovare gli strumenti MCP: in alcune prove ha saltato la ricerca dello strumento
+(«tool calls skipped») e ha scritto uno script per conto suo, o ha risposto che lo strumento «non è disponibile in questa sessione»,
+anche con il server acceso. Per forzarlo aiuta chiedergli prima di elencare gli strumenti del server e poi vietargli di scrivere script.
+`genera_quiz` e `verifica_quiz` non sono stati provati con Copilot, ma con il client Python (`examples/prova_client_mcp.py`).
+
 ## Se sviluppi con un coding agent (Step 3)
 Il progetto è pensato per essere modificato anche da un assistente (Copilot, Claude Code, Cursor): `AGENTS.md` dice cosa è il progetto,
 quali comandi lanciare prima di dire "fatto", dove sta ogni cosa, le **regole che non si violano** e gli errori già fatti. Le
@@ -264,7 +274,7 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 - **Le domande a due argomenti** vanno su un ramo solo (l'agente fa una ricerca obbligata in un ramo); nel gold sono i casi G24 e G26.
 - L'agente del tutor **non usa ancora** lo strumento che verifica le mosse (c'è nella scheda Scacchiera e nel server MCP).
 - Il gold ha 33 domande, scritte da una persona sola, e il giudice è uno solo (lo stesso modello che risponde): sotto 0.05 di differenza è rumore.
-- Il server MCP è provato con un host vero (VS Code con Copilot) e con un client Python, non con Claude Code né con Claude Desktop.
+- Il server MCP è provato con un host vero (VS Code con Copilot: `verifica_mossa`, `verifica_risposta`, `cerca_conoscenza`) e con un client Python (tutti gli strumenti, quiz compreso), non con Claude Code né con Claude Desktop. Con Copilot la chiamata allo strumento è incostante.
 
 ## Fonti e licenze
 I documenti `.md` in `data/` sono scritti per questo progetto. I tre PDF dei rami opzionali sono di terzi, **senza licenza libera dichiarata** (il manuale de Luca riporta
