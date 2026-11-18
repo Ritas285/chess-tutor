@@ -1,4 +1,4 @@
-﻿"""Step 2b: generatore di quiz da un documento allegato (quiz.genera_quiz, verifica_domanda, leggi_file). Offline, con finti."""
+"""Step 2b: generatore di quiz da un documento allegato (quiz.genera_quiz, verifica_domanda, leggi_file). Offline, con finti."""
 import pytest
 from fakes import ClienteStrutturato
 

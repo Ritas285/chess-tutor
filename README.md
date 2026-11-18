@@ -69,7 +69,7 @@ domande una differenza sotto 0.05 è **rumore**. Limiti: gold scritto da una per
 risponde e da un run all'altro può cambiare voto; un solo giudice.
 
 ## Interfaccia (Step 1h)
-Un'app Streamlit a pagina larga con due schede in alto (tema scacchiera, chiaro o scuro dalle impostazioni):
+Un'app Streamlit a pagina larga con tre schede in alto (tema scacchiera, chiaro o scuro dalle impostazioni):
 - **Chiedi al tutor**: chat con suggerimenti (uno è un tentativo di injection, per vedere il guardrail fermarlo a costo zero).
   Ogni risposta mostra "Come ha lavorato" (rami scelti, strumenti, **fonti**, interventi dei guardrail) e tempo, token e costo.
   Le domande bloccate e quelle fuori tema hanno un riquadro a parte. Ogni domanda è a sé: la memoria non c'è ancora.
@@ -81,6 +81,13 @@ streamlit run app.py          # poi apri http://localhost:8501
 ```
 Serve la chiave nel file `.env`; senza chiave l'app lo dice e non si rompe. L'indice dei documenti si crea al primo avvio (qualche
 secondo). Per trace e metriche (Phoenix, Grafana) vedi la sezione Osservabilità.
+
+### Scacchiera (Step 1i)
+La terza scheda verifica una mossa su una posizione con `python-chess` (nessun modello: stessa posizione e mossa, stessa risposta).
+Disegna la scacchiera **prima e dopo** la mossa, spiega **perché** una mossa non è legale (casa occupata, pezzo in mezzo, re sotto
+scacco, arrocco impossibile…) e legge la notazione italiana (C cavallo, A alfiere, T torre, D donna, R re), le coordinate (`e2e4`)
+e, come ripiego, quella inglese. Le lettere dei pezzi vanno **maiuscole** (`Cf3`): `cf3` minuscolo non è un cavallo, e il messaggio lo spiega. Funziona anche senza chiave. Lo stesso strumento è nel server MCP (`verifica_mossa`, `mosse_legali`).
+L'agente del tutor non lo usa ancora.
 
 ## Server MCP (Step 2a, lezione S13)
 Il tutor è anche un **server MCP**: un altro programma (un *host*: Claude Code, VS Code, Cursor, un client Python…) può usarlo
@@ -140,4 +147,5 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 
 ## Fonti e licenze
 I documenti in `data/` sono scritti per questo progetto. Eventuali documenti esterni (PDF) verranno elencati con fonte e licenza.
+
 

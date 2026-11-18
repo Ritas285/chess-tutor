@@ -8,5 +8,6 @@ prometheus-client
 mcp>=2
 pypdf
 streamlit>=1.57
+chess
 python-dotenv
 pytest

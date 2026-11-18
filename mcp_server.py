@@ -4,7 +4,7 @@
 Il tutor diventa un insieme di SERVIZI che un altro programma (un "host": Claude Code, VS Code, Cursor, un client Python…) può
 usare senza riscrivere niente. L'host fa da modello; il server dà conoscenza e verifiche.
 
-  tool      = un VERBO    cerca_conoscenza, verifica_risposta, genera_quiz, verifica_quiz
+  tool      = un VERBO    cerca_conoscenza, verifica_risposta, genera_quiz, verifica_quiz, verifica_mossa, mosse_legali
   resource  = un NOME     corpus://{ramo}/{documento}   (il testo di un documento, indirizzato per URI)
   prompt    = una RICETTA tutor_principiante, quiz_da_documento
 
@@ -27,7 +27,7 @@ from collections import OrderedDict
 
 from mcp.server import MCPServer
 
-from chess_tutor import config, guardrails, ingest, quiz, retrieval
+from chess_tutor import chess_tools, config, guardrails, ingest, quiz, retrieval
 from chess_tutor.tutor import formatta_passaggi
 
 MAX_K = 6
@@ -102,6 +102,18 @@ def crea_server(ricerche: dict | None = None, client=None) -> MCPServer:
             return f"Il quiz {quiz_id} ha {len(domande)} domande: scegli un numero da 1 a {len(domande)}."
         giudizio, _ = quiz.verifica_domanda(domande[numero - 1], risposta, client=_client())
         return f"{giudizio.esito}: {giudizio.feedback}"
+
+    @mcp.tool()
+    def verifica_mossa(fen: str, mossa: str) -> str:
+        """Dice se una mossa è LEGALE in una posizione e, se non lo è, perché. Controlla python-chess, non il modello. `fen` è la
+        posizione ("start" = posizione iniziale): NON inventarla, se l'utente non l'ha data chiedigliela. Notazione italiana
+        (C cavallo, A alfiere, T torre, D donna, R re: Cf3, Axc6, Dxf7, e8=D, O-O) o coordinate (e2e4)."""
+        return chess_tools.verifica_mossa(fen, mossa)
+
+    @mcp.tool()
+    def mosse_legali(fen: str) -> str:
+        """Elenca le mosse legali in una posizione (notazione italiana). `fen`: la posizione ("start" = iniziale), mai inventata."""
+        return chess_tools.mosse_legali(fen)
 
     @mcp.resource("corpus://{ramo}/{documento}")
     def leggi_documento(ramo: str, documento: str) -> str:

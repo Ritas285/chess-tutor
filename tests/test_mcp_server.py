@@ -1,4 +1,4 @@
-﻿"""Step 2a: il server MCP. Si prova in memoria con il client dell'SDK (`mcp.Client(server)`): nessun processo, nessuna chiave."""
+"""Step 2a: il server MCP. Si prova in memoria con il client dell'SDK (`mcp.Client(server)`): nessun processo, nessuna chiave."""
 import asyncio
 import re
 
@@ -12,7 +12,7 @@ from chess_tutor import config, retrieval
 from chess_tutor.quiz import Giudizio
 from chess_tutor.router import RouteOut
 
-TOOL_PREVISTI = {"cerca_conoscenza", "verifica_risposta", "genera_quiz", "verifica_quiz"}
+TOOL_PREVISTI = {"cerca_conoscenza", "verifica_risposta", "genera_quiz", "verifica_quiz", "verifica_mossa", "mosse_legali"}
 
 @pytest.fixture(scope="module")
 def ricerche():
@@ -196,3 +196,21 @@ def test_il_prompt_del_quiz_dice_di_non_rivelare_le_risposte(ricerche):
     corpo_prompt = p.messages[0].content.text
     assert "genera_quiz" in corpo_prompt and "verifica_quiz" in corpo_prompt and "senza rivelare" in corpo_prompt
     assert "Un documento." in corpo_prompt
+
+
+
+# ---------- le mosse via MCP (Step 1i) ----------
+def test_verifica_mossa_e_mosse_legali_via_mcp(ricerche):
+    server = mcp_server.crea_server(ricerche, giudice())
+    legale = corpo(vai(server, lambda c: c.call_tool("verifica_mossa", {"fen": "start", "mossa": "Cf3"})))
+    illegale = corpo(vai(server, lambda c: c.call_tool("verifica_mossa", {"fen": "start", "mossa": "e5"})))
+    assert legale.startswith("Mossa legale: Cf3") and "NON legale" in illegale
+    assert "20 mosse legali" in corpo(vai(server, lambda c: c.call_tool("mosse_legali", {"fen": "start"})))
+
+
+def test_una_posizione_inventata_o_malformata_non_fa_cadere_il_server(ricerche):
+    """Il difetto del progetto di partenza: una FEN inventata dal modello faceva cadere il turno. Qui diventa un messaggio."""
+    server = mcp_server.crea_server(ricerche, giudice())
+    for fen in ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBAR w KQkq - 0 1", "boh", "", "8/8/8/8/8/8/8/8 w - - 0 1"):
+        out = corpo(vai(server, lambda c, f=fen: c.call_tool("verifica_mossa", {"fen": f, "mossa": "e4"})))
+        assert "FEN non valida" in out or "posizione impossibile" in out or "Mossa" in out

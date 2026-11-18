@@ -1,4 +1,4 @@
-﻿"""Step 1h: il tema dei colori (.streamlit/config.toml). Si controlla che i nomi siano validi e che il testo sia leggibile (WCAG)."""
+"""Step 1h: il tema dei colori (.streamlit/config.toml). Si controlla che i nomi siano validi e che il testo sia leggibile (WCAG)."""
 import tomllib
 from pathlib import Path
 

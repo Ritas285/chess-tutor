@@ -1,4 +1,4 @@
-﻿"""Step 1h: l'interfaccia Streamlit. Si prova con AppTest (in processo, senza browser e senza chiave): tutor con finti.
+"""Step 1h: l'interfaccia Streamlit. Si prova con AppTest (in processo, senza browser e senza chiave): tutor con finti.
 
 Perché serve: in una versione precedente la chat andava in errore su una domanda bloccata dal guardrail e i test non lo vedevano,
 perché provavano il tutor e non l'interfaccia. Qui si prova l'interfaccia, compresi i casi "difficili".
@@ -230,4 +230,48 @@ def test_leggi_allegato_da_byte(ricerche):
         quiz.leggi_allegato("a.exe", b"MZ")
 
 
+
+
+
+# ---------- la scacchiera (Step 1i): non usa il modello, quindi funziona anche senza chiave ----------
+PAGINA_SCACCHIERA = "app_pages/scacchiera.py"
+
+
+def pagina_scacchiera():
+    at = AppTest.from_file(APP, default_timeout=20).run()
+    return at.switch_page(PAGINA_SCACCHIERA).run()
+
+
+def test_la_scacchiera_si_vede_e_funziona_anche_senza_chiave(monkeypatch):
+    monkeypatch.setattr(config, "OPENAI_API_KEY", "")
+    at = pagina_scacchiera()
+    assert not at.exception and at.title[0].value == "♞ Scacchiera" and not at.error
+    assert len(at.get("imgs")) >= 1 or len(at.get("image")) >= 1                    # la scacchiera disegnata
+
+
+def test_una_mossa_legale_mostra_la_posizione_dopo_la_mossa():
+    at = pagina_scacchiera()
+    at.text_input(key="mossa").set_value("Cf3").run()
+    assert not at.exception and "Mossa legale: Cf3" in unisci(at.success)
+    assert len(at.get("imgs")) == 2 or len(at.get("image")) == 2                      # prima e dopo
+
+
+def test_una_mossa_illegale_dice_perche():
+    at = pagina_scacchiera()
+    at.text_input(key="mossa").set_value("e5").run()
+    assert not at.exception and "NON legale" in unisci(at.error) and not at.success
+
+
+def test_una_fen_sbagliata_da_un_messaggio_e_non_un_errore():
+    at = pagina_scacchiera()
+    at.text_input(key="fen").set_value("questa non è una fen").run()
+    assert not at.exception and "FEN non valida" in unisci(at.error)
+
+
+def test_un_esempio_carica_la_posizione_e_la_mossa_suggerita_da_matto():
+    at = pagina_scacchiera()
+    at.selectbox(key="esempio").select("Matto del barbiere: tocca al Bianco (prova Dxf7)").run()
+    assert at.text_input(key="fen").value != "start"
+    at.text_input(key="mossa").set_value("Dxf7").run()
+    assert not at.exception and "SCACCO MATTO" in unisci(at.success)
 
