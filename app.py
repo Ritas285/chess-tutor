@@ -1,7 +1,7 @@
 """Interfaccia di Chess Tutor (Step 1h):   streamlit run app.py
 
 Pagina larga con le schede in alto (script in `app_pages/`): la chat col tutor, con fonti e costo di ogni risposta, il quiz su
-un documento allegato e la scacchiera (verifica delle mosse con python-chess). I colori stanno in `.streamlit/config.toml` (tema "scacchiera"). Gli aiuti sono in `chess_tutor/webapp.py`.
+un documento allegato e la scacchiera (lezioni su arrocco, aperture e matti; verifica delle mosse con python-chess). I colori stanno in `.streamlit/config.toml` (tema "scacchiera"). Gli aiuti sono in `chess_tutor/webapp.py`.
 """
 import streamlit as st
 

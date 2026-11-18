@@ -92,6 +92,31 @@ def test_documento_lungo_vuoto_e_servizio_giu_non_fanno_cadere_nulla():
 
 
 # ---------- verifica di una domanda del quiz ----------
+# ---------- più documenti nello stesso quiz ----------
+def test_un_documento_solo_resta_identico_a_prima():
+    testo, avvisi = quiz.unisci_allegati([("a.md", "Il cavallo salta.")])
+    assert testo == "Il cavallo salta." and avvisi == []
+
+
+def test_piu_documenti_si_uniscono_con_un_titolo_ciascuno():
+    testo, avvisi = quiz.unisci_allegati([("a.md", "Il cavallo salta."), ("b.md", "La torre va dritta.")])
+    assert testo.index("## Documento: a.md") < testo.index("Il cavallo salta.") < testo.index("## Documento: b.md") < testo.index("La torre va dritta.")
+    assert avvisi == []
+
+
+def test_il_limite_di_caratteri_si_divide_tra_i_documenti_e_nessuno_si_mangia_tutto():
+    lungo = "parola " * 5000                                    # 35.000 caratteri: da solo supererebbe il limite di tutto il quiz
+    testo, avvisi = quiz.unisci_allegati([("lungo.md", lungo), ("corto.md", "Il re non si cattura mai.")])
+    assert "Il re non si cattura mai." in testo                   # il secondo documento non viene tagliato fuori
+    assert len(testo) <= quiz.MAX_DOC_CHARS and len(avvisi) == 1 and "lungo.md" in avvisi[0]
+
+
+def test_si_ritrova_da_quale_documento_viene_una_frase():
+    documenti = {"a.md": "Il cavallo salta sopra gli altri pezzi, sempre.", "b.md": "La torre si muove in linea retta per tutta la colonna."}
+    assert quiz.documento_della_citazione("La torre si muove in linea retta per tutta la colonna.", documenti) == "b.md"
+    assert quiz.documento_della_citazione("Una frase che non sta in nessun documento di prova.", documenti) == ""
+
+
 def test_scelta_multipla_si_verifica_senza_modello():
     q = mc()
     for giusta in ("A", "a", "Un attacco doppio", "  un  attacco DOPPIO "):

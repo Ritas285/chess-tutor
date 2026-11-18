@@ -4,36 +4,52 @@ from chess_tutor import quiz as quizmod
 from chess_tutor import webapp
 
 st.title("📝 Quiz da un tuo documento")
-st.caption("Allega appunti o una dispensa (.md, .txt, .pdf). Il tutor scrive domande **solo** dal testo e ciascuna si appoggia a "
-           "una frase del documento: se la frase non si ritrova, la domanda viene scartata.")
+st.caption("Allega appunti o una dispensa (.md, .txt, .pdf), anche più di un documento. Il tutor scrive domande **solo** dal testo e ciascuna si "
+           "appoggia a una frase di un documento: se la frase non si ritrova, la domanda viene scartata.")
 
 tutor = webapp.tutor_o_ferma()
 st.session_state.setdefault("quiz", None)
 st.session_state.setdefault("esiti", {})
 
-allegato = st.file_uploader("Documento", type=["md", "txt", "pdf"], key="allegato")
+allegati = st.file_uploader("Documenti", type=["md", "txt", "pdf"], accept_multiple_files=True, key="allegato")
 n = st.slider("Numero di domande", 3, quizmod.MAX_DOMANDE, 5, key="n_domande")
 
-if st.button("Genera il quiz", icon=":material/auto_awesome:", disabled=allegato is None, type="primary", key="genera"):
+if st.button("Genera il quiz", icon=":material/auto_awesome:", disabled=not allegati, type="primary", key="genera"):
+    avvisi_lettura = []
+    if len(allegati) > quizmod.MAX_ALLEGATI:
+        avvisi_lettura.append(f"Hai caricato {len(allegati)} documenti: uso solo i primi {quizmod.MAX_ALLEGATI}.")
+    documenti: dict[str, str] = {}
+    for allegato in allegati[:quizmod.MAX_ALLEGATI]:
+        try:
+            testo_file = quizmod.leggi_allegato(allegato.name, allegato.getvalue())
+        except Exception as errore:         # PDF danneggiato o formato non leggibile: si dice quale, non si rompe l'app
+            avvisi_lettura.append(f"Non riesco a leggere «{allegato.name}»: {errore}")
+            continue
+        if not testo_file.strip():
+            avvisi_lettura.append(f"«{allegato.name}» non contiene testo leggibile (forse è una scansione).")
+            continue
+        documenti[allegato.name] = testo_file
+    if not documenti:
+        for avviso in avvisi_lettura:
+            st.error(avviso, icon=":material/error:")
+        st.stop()
+    testo, avvisi_unione = quizmod.unisci_allegati(list(documenti.items()))
+    attesa = webapp.attesa_scacchi(("Leggo i documenti…", "Scrivo le domande…", "Controllo che ogni domanda abbia la sua frase…"), bolla=False)
     try:
-        testo = quizmod.leggi_allegato(allegato.name, allegato.getvalue())
-    except Exception as errore:             # PDF danneggiato o formato non leggibile: si dice, non si rompe l'app
-        st.error(f"Non riesco a leggere il file: {errore}", icon=":material/error:")
-        st.stop()
-    if not testo.strip():
-        st.error("Il file non contiene testo leggibile (forse è una scansione). Prova con un altro file.", icon=":material/error:")
-        st.stop()
-    with st.spinner("Scrivo le domande…"):
         domande, avvisi = quizmod.genera_quiz(tutor.client, testo, n)
+    finally:
+        attesa.empty()
     for chiave in [k for k in st.session_state if k.startswith(("risposta_", "verifica_"))]:
         del st.session_state[chiave]        # le risposte del quiz precedente non devono restare nelle nuove domande
-    st.session_state.quiz = {"nome": allegato.name, "domande": domande, "avvisi": avvisi, "caratteri": len(testo),
-                             "anteprima": testo[:1500]}
+    st.session_state.quiz = {"nomi": list(documenti), "domande": domande, "avvisi": avvisi_lettura + avvisi_unione + avvisi,
+                             "caratteri": len(testo), "anteprima": "\n\n".join(f"— {nome} —\n{t[:1500 // len(documenti)]}" for nome, t in documenti.items()),
+                             "fonti": [quizmod.documento_della_citazione(q.citazione, documenti) for q in domande]}
     st.session_state.esiti = {}
 
 quiz = st.session_state.quiz
 if quiz:
-    with st.expander(f"Testo letto da «{quiz['nome']}» ({quiz['caratteri']} caratteri): controlla che sia leggibile"):
+    nomi = ", ".join(f"«{nome}»" for nome in quiz["nomi"])
+    with st.expander(f"Testo letto da {nomi} ({quiz['caratteri']} caratteri): controlla che sia leggibile"):
         st.text(quiz["anteprima"])
     for avviso in quiz["avvisi"]:
         st.warning(avviso, icon=":material/warning:")
@@ -54,7 +70,8 @@ if quiz:
             verificata = st.session_state.esiti.get(i)
             if verificata and verificata[1] == risposta:        # se cambi la risposta, l'esito vecchio non si mostra più
                 webapp.mostra_esito(verificata[0].esito, verificata[0].feedback)
-                st.caption(f"Nel documento: «{q.citazione}»")
+                fonte = quiz["fonti"][i] if len(quiz["nomi"]) > 1 else ""        # con più documenti si dice da quale viene la frase
+                st.caption((f"Nel documento «{fonte}»: " if fonte else "Nel documento: ") + f"«{q.citazione}»")
 
     if st.session_state.esiti:
         st.divider()

@@ -5,10 +5,61 @@ L'app vera sono `app.py` (la navigazione) e le pagine in `app_pages/` (script di
 """
 from __future__ import annotations
 
+from html import escape
+
 import streamlit as st
 
 from . import config, observability
 from .tutor import Risposta, Tutor
+
+# ---------- il caricamento a tema scacchi ----------
+FRASI_ATTESA = ("Cerco nei documenti…", "Scelgo il ramo giusto…", "Preparo la mossa…")
+
+# Un cavallo salta lungo una fila di otto caselle (crema e verde, come il tema). Solo CSS: niente JavaScript. Le frasi cambiano da sole.
+# Con "riduci animazioni" attivo nel sistema il cavallo sta fermo e resta la prima frase. Le classi iniziano con "sc-" per non toccare altro.
+_STILE_ATTESA = """
+<style>
+.sc-attesa{display:flex;align-items:center;gap:1rem;padding:.35rem 0}
+.sc-attesa .sc-fila{position:relative;flex:none;width:256px;height:32px;border-radius:4px;
+  background:repeating-linear-gradient(90deg,#EEEED2 0 32px,#4F7A39 32px 64px);box-shadow:0 0 0 1px rgba(69,65,60,.35)}
+.sc-attesa .sc-cavallo{position:absolute;left:0;top:0;width:32px;height:32px;line-height:32px;text-align:center;font-size:26px;
+  color:#262421;text-shadow:0 0 2px #EEEED2,0 0 3px #EEEED2;animation:sc-salti 3.6s ease-in-out infinite alternate}
+@keyframes sc-salti{
+  0%{transform:translate(0,0)} 8.3%{transform:translate(32px,-20px)} 16.7%{transform:translate(64px,0)}
+  25%{transform:translate(96px,-20px)} 33.3%{transform:translate(128px,0)} 41.7%{transform:translate(160px,-20px)}
+  50%{transform:translate(192px,0)} 58.3%{transform:translate(208px,-20px)} 66.7%,100%{transform:translate(224px,0)}}
+.sc-attesa .sc-testo{position:relative;flex:1;min-width:12em;height:1.6em}
+.sc-attesa .sc-testo span{position:absolute;left:0;top:0;opacity:0;animation:sc-frase 9s infinite}
+.sc-attesa .sc-testo span:nth-child(2){animation-delay:3s}
+.sc-attesa .sc-testo span:nth-child(3){animation-delay:6s}
+@keyframes sc-frase{0%{opacity:0} 6%,30%{opacity:1} 36%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .sc-attesa .sc-cavallo{animation:none}
+  .sc-attesa .sc-testo span{animation:none;opacity:0}
+  .sc-attesa .sc-testo span:first-child{opacity:1}}
+</style>
+"""
+
+
+def html_attesa(frasi: tuple[str, ...] = FRASI_ATTESA) -> str:
+    """Il caricamento a tema scacchi come HTML (si prova senza avviare l'app). Le frasi si ripetono a rotazione, 3 secondi ciascuna."""
+    spans = "".join(f"<span>{escape(f)}</span>" for f in frasi)
+    return (f'{_STILE_ATTESA}<div class="sc-attesa" role="status" aria-live="polite" aria-label="Il tutor sta preparando la risposta">'
+            f'<div class="sc-fila" aria-hidden="true"><div class="sc-cavallo">♞︎</div></div>'
+            f'<div class="sc-testo">{spans}</div></div>')
+
+
+def attesa_scacchi(frasi: tuple[str, ...] = FRASI_ATTESA, bolla: bool = True):
+    """Mostra il caricamento e restituisce il segnaposto: a fine attesa si chiama `.empty()` (meglio dentro un try/finally).
+    `bolla=True` lo mette dentro un messaggio del tutor (chat); `bolla=False` lo mostra da solo (pagina del quiz)."""
+    segnaposto = st.empty()
+    with segnaposto.container():
+        if bolla:
+            with st.chat_message("assistant"):
+                st.html(html_attesa(frasi))
+        else:
+            st.html(html_attesa(frasi))
+    return segnaposto
 
 MSG_SENZA_CHIAVE = ("Manca la chiave OpenAI. Copia `.env.example` in `.env`, scrivi la tua `OPENAI_API_KEY` e riavvia l'app "
                     "(`streamlit run app.py`). Senza chiave il tutor non può cercare né rispondere.")

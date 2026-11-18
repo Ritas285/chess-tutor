@@ -5,7 +5,7 @@ perché provavano il tutor e non l'interfaccia. Qui si prova l'interfaccia, comp
 """
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from fakes import ClienteStrutturato, HashEmbedder, ScriptedClient
@@ -82,6 +82,49 @@ def test_la_chat_risponde_con_fonti_e_mostra_come_ha_lavorato(ricerche):
     assert at.expander[0].label == "Come ha lavorato"
     assert [m.value for m in at.metric if m.label == "Domande in questa sessione"] == ["1"]
     assert not at.pills                                                # i suggerimenti spariscono dopo la prima domanda
+
+
+def test_il_caricamento_ha_il_cavallo_le_frasi_e_rispetta_riduci_animazioni():
+    html = webapp.html_attesa(("Prima frase", "Seconda frase"))
+    assert 'role="status"' in html and "♞" in html                           # annunciato a chi usa uno screen reader, con il cavallo
+    assert "<span>Prima frase</span>" in html and "<span>Seconda frase</span>" in html
+    assert "@keyframes sc-salti" in html                                       # l'animazione del salto
+    assert "prefers-reduced-motion" in html                                    # chi ha "riduci animazioni" vede il cavallo fermo
+    assert "&lt;b&gt;" in webapp.html_attesa(("<b>x</b>",)) and "<b>x" not in webapp.html_attesa(("<b>x</b>",))   # il testo non può iniettare HTML
+
+
+def spia_attesa():
+    """Un finto `attesa_scacchi` che registra l'ordine degli eventi: mostrato -> (lavoro) -> tolto."""
+    eventi = []
+    spia = MagicMock()
+    spia.return_value.empty.side_effect = lambda: eventi.append("tolto")
+    spia.side_effect = lambda *a, **k: (eventi.append("mostrato"), spia.return_value)[1]
+    return spia, eventi
+
+
+def test_la_chat_mostra_il_caricamento_mentre_il_tutor_lavora_e_poi_lo_toglie(ricerche):
+    t = tutor_finto(ricerche)
+    spia, eventi = spia_attesa()
+    ask_vero = t.ask
+    t.ask = lambda domanda: (eventi.append("lavoro"), ask_vero(domanda))[1]
+    with patch.object(webapp, "get_tutor", return_value=t), patch.object(webapp, "attesa_scacchi", spia):
+        at = AppTest.from_file(APP, default_timeout=20).run()
+        at.chat_input[0].set_value("Come funziona l'arrocco?").run()
+    assert not at.exception
+    assert eventi == ["mostrato", "lavoro", "tolto"]
+
+
+def test_se_il_tutor_va_in_errore_il_caricamento_non_resta_acceso(ricerche):
+    t = tutor_finto(ricerche)
+    spia, eventi = spia_attesa()
+
+    def guasto(domanda):
+        raise RuntimeError("il servizio non risponde")
+    t.ask = guasto
+    with patch.object(webapp, "get_tutor", return_value=t), patch.object(webapp, "attesa_scacchi", spia):
+        at = AppTest.from_file(APP, default_timeout=20).run()
+        at.chat_input[0].set_value("Come funziona l'arrocco?").run()
+    assert eventi == ["mostrato", "tolto"]                                     # tolto anche se è andata male (try/finally)
 
 
 def test_il_trucco_viene_fermato_e_l_app_non_va_in_errore(ricerche):
@@ -169,6 +212,17 @@ def test_percorso_completo_allega_genera_rispondi_verifica(ricerche):
     assert any("Nel documento: «" in c.value for c in at.caption)           # la citazione si mostra dopo la verifica
 
 
+def test_il_quiz_mostra_il_caricamento_mentre_scrive_le_domande_e_poi_lo_toglie(ricerche):
+    spia, eventi = spia_attesa()
+    with patch.object(webapp, "get_tutor", return_value=tutor_finto(ricerche, client_quiz())), patch.object(webapp, "attesa_scacchi", spia):
+        at = pagina_quiz(None)
+        at.file_uploader(key="allegato").upload("dispensa.md", DOC.encode("utf-8")).run()
+        at.button(key="genera").click().run()
+    assert not at.exception and "Cos'è una forchetta?" in unisci(at.markdown)
+    assert eventi == ["mostrato", "tolto"]
+    assert spia.call_args.kwargs["bolla"] is False                             # nel quiz non c'è la bolla della chat
+
+
 def test_una_risposta_sbagliata_a_scelta_multipla_e_errata_senza_modello(ricerche):
     t = tutor_finto(ricerche, client_quiz())
     with patch.object(webapp, "get_tutor", return_value=t):
@@ -199,10 +253,48 @@ def test_pdf_rotto_o_senza_testo_danno_un_messaggio_non_un_errore(ricerche):
         at = pagina_quiz(None)
         at.file_uploader(key="allegato").upload("rotto.pdf", b"non sono un pdf").run()
         at.button(key="genera").click().run()
-        assert not at.exception and "Non riesco a leggere il file" in unisci(at.error)
+        assert not at.exception and "Non riesco a leggere «rotto.pdf»" in unisci(at.error)       # dice QUALE file non si legge
         at.file_uploader(key="allegato").upload("vuoto.md", b"   \n  ").run()
         at.button(key="genera").click().run()
     assert not at.exception and "non contiene testo leggibile" in unisci(at.error)
+
+
+ALTRO = "# Il pedone\n\nIl pedone avanza di una casa alla volta e cattura in diagonale, e all'ultima traversa si promuove.\n"
+
+
+def carica(at, *documenti):
+    """Carica più documenti (nome, testo) nell'uploader del quiz, come farebbe l'utente con la selezione multipla."""
+    at.file_uploader(key="allegato").set_value([(nome, testo.encode("utf-8"), "text/markdown") for nome, testo in documenti]).run()
+    return at
+
+
+def test_si_possono_caricare_piu_documenti_e_si_dice_da_quale_viene_la_frase(ricerche):
+    with patch.object(webapp, "get_tutor", return_value=tutor_finto(ricerche, client_quiz())):
+        at = carica(pagina_quiz(None), ("tattiche.md", DOC), ("pedone.md", ALTRO))
+        assert at.file_uploader(key="allegato").accept_multiple_files and not at.button(key="genera").disabled
+        at.button(key="genera").click().run()
+        assert not at.exception and "Cos'è una forchetta?" in unisci(at.markdown)
+        assert at.expander[0].label.startswith("Testo letto da «tattiche.md», «pedone.md»")
+        at.radio(key="risposta_0").set_value("Un attacco doppio").run()
+        at.button(key="verifica_0").click().run()
+    assert any(c.value.startswith("Nel documento «tattiche.md»: «") for c in at.caption)       # la frase viene dal primo documento
+
+
+def test_se_un_documento_non_si_legge_gli_altri_si_usano_e_lo_dice(ricerche):
+    with patch.object(webapp, "get_tutor", return_value=tutor_finto(ricerche, client_quiz())):
+        at = pagina_quiz(None)
+        at.file_uploader(key="allegato").set_value([("rotto.pdf", b"non sono un pdf", "application/pdf"),
+                                                     ("tattiche.md", DOC.encode("utf-8"), "text/markdown")]).run()
+        at.button(key="genera").click().run()
+    assert not at.exception and "Cos'è una forchetta?" in unisci(at.markdown)
+    assert any("Non riesco a leggere «rotto.pdf»" in w.value for w in at.warning)
+
+
+def test_oltre_cinque_documenti_se_ne_usano_cinque_e_lo_dice(ricerche):
+    with patch.object(webapp, "get_tutor", return_value=tutor_finto(ricerche, client_quiz())):
+        at = carica(pagina_quiz(None), *[(f"d{i}.md", DOC) for i in range(6)])
+        at.button(key="genera").click().run()
+    assert not at.exception and any("uso solo i primi 5" in w.value for w in at.warning)
 
 
 def test_un_nuovo_quiz_cancella_le_risposte_del_precedente(ricerche):
@@ -238,13 +330,16 @@ def test_leggi_allegato_da_byte(ricerche):
 PAGINA_SCACCHIERA = "app_pages/scacchiera.py"
 
 
-def pagina_scacchiera():
+def pagina_scacchiera(modo="Prova una mossa"):
     """La scheda non usa il modello, ma per raggiungerla parte prima la pagina della chat: con un tutor FINTO, così i test non
     fanno nessuna chiamata di rete (prima partiva la creazione del tutor vero con la chiave finta: rifiutata, e nessuno se ne accorgeva)."""
     finto = SimpleNamespace(client=SimpleNamespace(model_name="finto"))
     with patch.object(webapp, "get_tutor", return_value=finto):
         at = AppTest.from_file(APP, default_timeout=20).run()
-        return at.switch_page(PAGINA_SCACCHIERA).run()
+        at = at.switch_page(PAGINA_SCACCHIERA).run()
+    if modo != "Lezioni":                                        # la scheda si apre sulle lezioni: le prove di una mossa passano dall'altro modo
+        at = at.segmented_control(key="modo").set_value(modo).run()
+    return at
 
 
 def test_la_scacchiera_si_vede_e_funziona_anche_senza_chiave(monkeypatch):
@@ -273,12 +368,33 @@ def test_una_fen_sbagliata_da_un_messaggio_e_non_un_errore():
     assert not at.exception and "FEN non valida" in unisci(at.error)
 
 
-def test_un_esempio_carica_la_posizione_e_la_mossa_suggerita_da_matto():
-    at = pagina_scacchiera()
-    at.selectbox(key="esempio").select("Matto del barbiere: tocca al Bianco (prova Dxf7)").run()
-    assert at.text_input(key="fen").value != "start"
-    at.text_input(key="mossa").set_value("Dxf7").run()
-    assert not at.exception and "SCACCO MATTO" in unisci(at.success)
+def test_la_scheda_si_apre_sulle_lezioni_e_non_ha_piu_le_posizioni_di_esempio():
+    at = pagina_scacchiera("Lezioni")
+    assert not at.exception and at.segmented_control(key="modo").value == "Lezioni"
+    assert at.subheader[0].value == "L'arrocco corto"                              # la prima lezione del primo argomento
+    assert at.select_slider(key="passo_arrocco_corto").value == 0                  # parte dalla posizione iniziale
+    assert not at.selectbox and not at.text_input                                  # niente più «Posizioni di esempio» né campi FEN in questo modo
+    assert len(at.get("imgs")) == 1 or len(at.get("image")) == 1
+
+
+def test_una_lezione_si_vede_una_mossa_alla_volta_con_il_suo_commento():
+    at = pagina_scacchiera("Lezioni")
+    ultimo = len(at.select_slider(key="passo_arrocco_corto").options) - 1
+    at.select_slider(key="passo_arrocco_corto").set_value(ultimo).run()
+    assert not at.exception and "Arrocco corto (O-O)" in unisci(at.info)           # il commento dell'ultima mossa
+    assert "**4. O-O**" in unisci(at.caption)                                      # la mossa corrente in grassetto
+    at.select_slider(key="passo_arrocco_corto").set_value(1).run()
+    assert "Il Bianco occupa il centro" in unisci(at.info)
+
+
+def test_si_cambia_argomento_e_lezione_e_il_matto_si_riconosce():
+    at = pagina_scacchiera("Lezioni")
+    at.pills(key="lezione_Mosse speciali").set_value("en_passant").run()
+    assert not at.exception and at.subheader[0].value == "La presa en passant"
+    at.segmented_control(key="gruppo").set_value("Matti rapidi").run()
+    assert at.subheader[0].value == "Matto del barbiere"
+    at.select_slider(key="passo_matto_barbiere").set_value(7).run()
+    assert not at.exception and "Scacco matto!" in unisci(at.success)
 
 
 

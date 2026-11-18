@@ -45,8 +45,11 @@ if domanda:
     utente = webapp.messaggio_utente(domanda)
     st.session_state.messaggi.append(utente)
     webapp.mostra_messaggio(utente)
-    with st.spinner("Cerco nei documenti…"):
+    attesa = webapp.attesa_scacchi()           # il cavallo salta mentre il tutor lavora
+    try:
         risposta = tutor.ask(domanda)
+    finally:
+        attesa.empty()
     assistente = webapp.messaggio_da_risposta(risposta)
     st.session_state.messaggi.append(assistente)
     webapp.mostra_messaggio(assistente)

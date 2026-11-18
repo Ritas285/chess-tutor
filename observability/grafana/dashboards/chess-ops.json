@@ -60,8 +60,66 @@
       "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true },
       "gridPos": { "h": 7, "w": 8, "x": 16, "y": 17 },
       "targets": [ { "refId": "A", "expr": "sum(chess_interventi_guardrail_total) by (tipo)", "legendFormat": "{{tipo}}" } ]
+    },
+    {
+      "type": "piechart", "title": "Come sono andate le domande",
+      "description": "Totale dall'ultimo avvio dell'app, visto nell'intervallo di tempo scelto in alto a destra: risposte date, domande fuori tema, trucchi fermati dalla barriera.",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 24 },
+      "options": { "pieType": "donut", "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "tooltip": { "mode": "single", "sort": "none" } },
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [
+        { "matcher": { "id": "byName", "options": "risposta" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } } ] },
+        { "matcher": { "id": "byName", "options": "fuori_tema" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } } ] },
+        { "matcher": { "id": "byName", "options": "bloccata" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] } ] },
+      "targets": [ { "refId": "A", "expr": "sum(last_over_time(chess_domande_total[$__range])) by (esito)", "legendFormat": "{{esito}}", "instant": true, "range": false } ]
+    },
+    {
+      "type": "piechart", "title": "In quale ramo cerca il router",
+      "description": "Totale dall'ultimo avvio dell'app, visto nell'intervallo di tempo scelto: quante domande sono andate su ogni ramo (nessuno = fuori tema o bloccata).",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 24 },
+      "options": { "pieType": "donut", "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "tooltip": { "mode": "single", "sort": "none" } },
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [] },
+      "targets": [ { "refId": "A", "expr": "sum(last_over_time(chess_domande_total[$__range])) by (ramo)", "legendFormat": "{{ramo}}", "instant": true, "range": false } ]
+    },
+    {
+      "type": "piechart", "title": "Quanto sono veloci le risposte",
+      "description": "Totale dall'ultimo avvio dell'app, visto nell'intervallo di tempo scelto: risposte veloci (fino a 3 secondi), medie (3-8 secondi) e lente (oltre 8 secondi).",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 24 },
+      "options": { "pieType": "donut", "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "tooltip": { "mode": "single", "sort": "none" } },
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [
+        { "matcher": { "id": "byName", "options": "Veloci (fino a 3 s)" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } } ] },
+        { "matcher": { "id": "byName", "options": "Medie (3-8 s)" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } } ] },
+        { "matcher": { "id": "byName", "options": "Lente (oltre 8 s)" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] } ] },
+      "targets": [
+        { "refId": "A", "expr": "sum(last_over_time(chess_latenza_secondi_bucket{le=\"3.0\"}[$__range]))", "legendFormat": "Veloci (fino a 3 s)", "instant": true, "range": false },
+        { "refId": "B", "expr": "sum(last_over_time(chess_latenza_secondi_bucket{le=\"8.0\"}[$__range])) - sum(last_over_time(chess_latenza_secondi_bucket{le=\"3.0\"}[$__range]))", "legendFormat": "Medie (3-8 s)", "instant": true, "range": false },
+        { "refId": "C", "expr": "sum(last_over_time(chess_latenza_secondi_count[$__range])) - sum(last_over_time(chess_latenza_secondi_bucket{le=\"8.0\"}[$__range]))", "legendFormat": "Lente (oltre 8 s)", "instant": true, "range": false }
+      ]
+    },
+    {
+      "type": "piechart", "title": "Token: domanda contro risposta",
+      "description": "Totale dall'ultimo avvio dell'app, visto nell'intervallo di tempo scelto: i token mandati al modello (prompt: domanda e documenti trovati) contro quelli scritti dal modello (completati).",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 32 },
+      "options": { "pieType": "donut", "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "tooltip": { "mode": "single", "sort": "none" } },
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [] },
+      "targets": [ { "refId": "A", "expr": "sum(last_over_time(chess_token_total[$__range])) by (tipo)", "legendFormat": "{{tipo}}", "instant": true, "range": false } ]
+    },
+    {
+      "type": "piechart", "title": "Quali strumenti usa l'agente",
+      "description": "Totale dall'ultimo avvio dell'app, visto nell'intervallo di tempo scelto: quante ricerche ha fatto in ogni ramo.",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 32 },
+      "options": { "pieType": "donut", "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "tooltip": { "mode": "single", "sort": "none" } },
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [] },
+      "targets": [ { "refId": "A", "expr": "sum(last_over_time(chess_chiamate_strumento_total[$__range])) by (strumento)", "legendFormat": "{{strumento}}", "instant": true, "range": false } ]
+    },
+    {
+      "type": "piechart", "title": "Che cosa fermano i guardrail",
+      "description": "Totale dall'ultimo avvio dell'app, visto nell'intervallo di tempo scelto: le difese intervenute, per tipo (domanda bloccata, link rimosso, ecc.).",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 32 },
+      "options": { "pieType": "donut", "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "tooltip": { "mode": "single", "sort": "none" } },
+      "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [] },
+      "targets": [ { "refId": "A", "expr": "sum(last_over_time(chess_interventi_guardrail_total[$__range])) by (tipo)", "legendFormat": "{{tipo}}", "instant": true, "range": false } ]
     }
   ],
   "schemaVersion": 39,
-  "version": 1
+  "version": 2
 }

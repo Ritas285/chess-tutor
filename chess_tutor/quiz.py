@@ -140,6 +140,34 @@ def leggi_allegato(nome: str, dati: bytes) -> str:
     raise ValueError(f"formato non supportato: {estensione or 'senza estensione'} (usa .md, .txt o .pdf)")
 
 
+MAX_ALLEGATI = 5             # più documenti nello stesso quiz: oltre questo numero il limite di caratteri a testa diventerebbe troppo piccolo
+
+
+def unisci_allegati(documenti: list[tuple[str, str]]) -> tuple[str, list[str]]:
+    """Più documenti ("nome", "testo") -> un solo testo con un'intestazione per ciascuno, e gli avvisi.
+    Il limite di caratteri (MAX_DOC_CHARS) è UNO per tutto il quiz: con più documenti si divide tra loro, altrimenti il primo si mangerebbe
+    tutto lo spazio e gli altri non verrebbero letti. Con un documento solo non cambia niente: stesso testo di prima."""
+    if len(documenti) == 1:
+        return documenti[0][1], []
+    avvisi: list[str] = []
+    quota = (MAX_DOC_CHARS - 100 * len(documenti)) // len(documenti)
+    parti = []
+    for nome, testo in documenti:
+        if len(testo) > quota:
+            avvisi.append(f"«{nome}» è lungo: uso solo i primi {quota} caratteri (il limite si divide tra i {len(documenti)} documenti)")
+            testo = testo[:quota]
+        parti.append(f"## Documento: {nome}\n\n{testo.strip()}")
+    return "\n\n".join(parti), avvisi
+
+
+def documento_della_citazione(citazione: str, documenti: dict[str, str]) -> str:
+    """Il nome del documento che contiene la frase (con le stesse tolleranze di `citazione_presente`); stringa vuota se nessuno."""
+    for nome, testo in documenti.items():
+        if citazione_presente(citazione, _canon(testo)):
+            return nome
+    return ""
+
+
 def leggi_file(percorso: str | Path) -> str:
     """Il testo di un file allegato su disco (vedi `leggi_allegato`)."""
     p = Path(percorso)

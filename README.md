@@ -82,7 +82,7 @@ Limite onesto: le regole a parole chiave si aggirano; per questo ci sono più ba
 Due livelli, entrambi opzionali (se non sono attivi il tutor funziona uguale):
 - **Trace → Phoenix** (`http://localhost:6006`): per ogni domanda l'albero router / agente / modello / ricerca, il prompt, i
   **documenti recuperati** e i token. Risponde a *"perché questa risposta è così?"*.
-- **Metriche → Prometheus + Grafana** (`http://localhost:3000`, dashboard *Chess Tutor — operazioni*): domande per esito e per ramo,
+- **Metriche → Prometheus + Grafana** (`http://localhost:3000`, dashboard *Chess Tutor — operazioni*, con anche **sei grafici a torta**: esito delle domande, ramo scelto dal router, velocità delle risposte, token, strumenti dell'agente, guardrail; mostrano il totale dall'ultimo avvio dell'app e servono i dati: nel `.env` devono essere accese `PHOENIX_ENDPOINT` e `ENABLE_METRICS=1`): domande per esito e per ramo,
   latenza p50/p95, token, costo, chiamate per strumento, interventi dei guardrail. Risponde a *"quanto costa e quanto è lento?"*.
 
 ```powershell
@@ -118,8 +118,9 @@ Un'app Streamlit a pagina larga con tre schede in alto (tema scacchiera, chiaro 
 - **Chiedi al tutor**: chat con suggerimenti (uno è un tentativo di injection, per vedere il guardrail fermarlo a costo zero).
   Ogni risposta mostra "Come ha lavorato" (rami scelti, strumenti, **fonti**, interventi dei guardrail) e tempo, token e costo.
   Le domande bloccate e quelle fuori tema hanno un riquadro a parte. Ogni domanda è a sé: la memoria non c'è ancora.
-- **Quiz da un tuo documento**: allega un `.md`, `.txt` o `.pdf`, genera le domande, rispondi e verifica. Dopo la verifica si vede la
-  frase del documento su cui si basa la domanda.
+- **Quiz da un tuo documento**: allega uno o **più documenti** (fino a 5, `.md`, `.txt` o `.pdf`), genera le domande, rispondi e verifica. Dopo la
+  verifica si vede la frase su cui si basa la domanda e, con più documenti, **da quale documento viene**. Il limite di caratteri del quiz è uno solo e si
+  divide tra i documenti; se un file non si legge, gli altri si usano e l'app dice quale. Il quiz nell'app non passa dall'MCP (lo stesso codice è anche nel server MCP).
 
 ```powershell
 streamlit run app.py          # poi apri http://localhost:8501
@@ -127,8 +128,16 @@ streamlit run app.py          # poi apri http://localhost:8501
 Serve la chiave nel file `.env`; senza chiave l'app lo dice e non si rompe. L'indice dei documenti si crea al primo avvio (qualche
 secondo). Per trace e metriche (Phoenix, Grafana) vedi la sezione Osservabilità.
 
-### Scacchiera (Step 1i)
-La terza scheda verifica una mossa su una posizione con `python-chess` (nessun modello: stessa posizione e mossa, stessa risposta).
+Mentre il tutor lavora si vede un **cavallo che salta lungo una fila di caselle crema e verde**, con frasi che cambiano da sole («Cerco nei documenti…»);
+sparisce quando arriva la risposta. Solo CSS, e con «riduci animazioni» attivo nel sistema il cavallo sta fermo.
+
+### Scacchiera: lezioni e prova di una mossa (Step 1i)
+La terza scheda ha due modi. **Lezioni** (si apre su questo): come funzionano l'**arrocco** corto e lungo, la **presa en passant**, la **promozione**, le
+**aperture** (Italiana, Spagnola, Siciliana, Francese, Gambetto di Donna, Londra, Indiana di Re) e i **matti rapidi** (del barbiere e del pazzo), una
+mossa alla volta con un commento e la freccia sull'ultima mossa. Le spiegazioni riprendono i documenti del tutor; le mosse di ogni lezione sono giocate dai test con
+`python-chess` (devono essere legali e arrivare dove la lezione dice: il re in g1 dopo O-O, i due matti che finiscono davvero in matto).
+
+**Prova una mossa**: verifica una mossa su una posizione con `python-chess` (nessun modello: stessa posizione e mossa, stessa risposta).
 Disegna la scacchiera **prima e dopo** la mossa, spiega **perché** una mossa non è legale (casa occupata, pezzo in mezzo, re sotto
 scacco, arrocco impossibile…) e legge la notazione italiana (C cavallo, A alfiere, T torre, D donna, R re), le coordinate (`e2e4`)
 e, come ripiego, quella inglese. Le lettere dei pezzi vanno **maiuscole** (`Cf3`): `cf3` minuscolo non è un cavallo, e il messaggio lo spiega. Funziona anche senza chiave. Lo stesso strumento è nel server MCP (`verifica_mossa`, `mosse_legali`).
