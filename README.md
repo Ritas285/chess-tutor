@@ -114,8 +114,20 @@ python evals/valuta_quiz.py                   # 3 documenti: domande valide, sos
 ```
 Negli host il `command` deve puntare al Python del `.venv` (`...\.venv\Scripts\python.exe`) e `args` al percorso assoluto di `mcp_server.py`.
 
-## Installazione (Windows, PowerShell, Python 3.12)
+## Se sviluppi con un coding agent (Step 3)
+Il progetto è pensato per essere modificato anche da un assistente (Copilot, Claude Code, Cursor): `AGENTS.md` dice cosa è il progetto,
+quali comandi lanciare prima di dire "fatto", dove sta ogni cosa, le **regole che non si violano** e gli errori già fatti. Le
+procedure ricorrenti sono quattro skill in `.claude/skills/` (`add-rag-branch`, `write-chess-content`, `run-evals`, `security-retest`).
+`.mcp.json` (Claude Code) e `.vscode/mcp.json` (VS Code/Copilot) collegano il server MCP del progetto, così l'assistente può
+controllare ciò che scrive (`verifica_mossa`, `cerca_conoscenza`). Un test verifica che `AGENTS.md` e le skill citino solo file e
+comandi che esistono e che il server parta con quella configurazione. I comandi sono per Windows (`.venv/Scripts/python.exe`): su
+Linux o macOS usa `.venv/bin/python`.
+
 ```powershell
+python evals/verifica_contenuti.py    # le mosse scritte nei documenti di data/ sono legali? (python-chess, nessuna chiave)
+```
+
+## Installazione (Windows, PowerShell, Python 3.12)```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt

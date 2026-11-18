@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "chess-tutor": { "command": ".venv/Scripts/python.exe", "args": ["mcp_server.py"] }
+  }
+}
