@@ -2,23 +2,25 @@
 # Niente statistiche d'uso inviate a Streamlit (e niente richiesta di e-mail al primo avvio).
 gatherUsageStats = false
 
-# Tema "scacchiera": verde e crema in chiaro, grigio scuro in scuro. L'utente può scegliere dal menu delle impostazioni.
+# Tema "legno" (come la seconda versione delle slide): crema e marrone in chiaro, viola scuro e legno chiaro in scuro.
+# L'utente può scegliere dal menu delle impostazioni o dal pulsante nell'intestazione (vedi chess_tutor/webapp.py).
 [theme]
 baseRadius = "medium"
 showWidgetBorder = true
+headingFont = "Cambria, Georgia, serif"
 
 [theme.light]
-primaryColor = "#4F7A39"
-backgroundColor = "#FBF8F1"
-secondaryBackgroundColor = "#EEEED2"
-textColor = "#2B2B2B"
-linkColor = "#3E6B2A"
-borderColor = "#D6D2BE"
+primaryColor = "#A5582D"
+backgroundColor = "#FBF4E4"
+secondaryBackgroundColor = "#F3E4BF"
+textColor = "#2B2433"
+linkColor = "#8B4A24"
+borderColor = "#D9C7A3"
 
 [theme.dark]
-primaryColor = "#86A666"
-backgroundColor = "#262421"
-secondaryBackgroundColor = "#312E2B"
-textColor = "#EEEED2"
-linkColor = "#A9C58A"
-borderColor = "#45413C"
+primaryColor = "#E3A66E"
+backgroundColor = "#231D2B"
+secondaryBackgroundColor = "#2B2433"
+textColor = "#F3E4BF"
+linkColor = "#E3A66E"
+borderColor = "#4A4A6A"

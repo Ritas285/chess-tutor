@@ -5,7 +5,10 @@ L'app vera sono `app.py` (la navigazione) e le pagine in `app_pages/` (script di
 """
 from __future__ import annotations
 
+import base64
+from functools import lru_cache
 from html import escape
+from pathlib import Path
 
 import streamlit as st
 
@@ -21,7 +24,7 @@ _STILE_ATTESA = """
 <style>
 .sc-attesa{display:flex;align-items:center;gap:1rem;padding:.35rem 0}
 .sc-attesa .sc-fila{position:relative;flex:none;width:256px;height:32px;border-radius:4px;
-  background:repeating-linear-gradient(90deg,#EEEED2 0 32px,#4F7A39 32px 64px);box-shadow:0 0 0 1px rgba(69,65,60,.35)}
+  background:repeating-linear-gradient(90deg,#F3E4BF 0 32px,#A5582D 32px 64px);box-shadow:0 0 0 1px rgba(69,65,60,.35)}
 .sc-attesa .sc-cavallo{position:absolute;left:0;top:0;width:32px;height:32px;line-height:32px;text-align:center;font-size:26px;
   color:#262421;text-shadow:0 0 2px #EEEED2,0 0 3px #EEEED2;animation:sc-salti 3.6s ease-in-out infinite alternate}
 @keyframes sc-salti{
@@ -60,6 +63,107 @@ def attesa_scacchi(frasi: tuple[str, ...] = FRASI_ATTESA, bolla: bool = True):
         else:
             st.html(html_attesa(frasi))
     return segnaposto
+
+# ---------- l'aspetto: intestazione e sfondo a scacchiera ----------
+# Su richiesta di Rita: titolo e sfondo più curati, a tema legno (come la seconda versione delle slide), con la stessa illustrazione
+# della prima slide e un pulsante chiaro/scuro. Le classi iniziano con "sc-" per non toccare altro. I colori cambiano con il tema
+# tramite variabili CSS: un piccolo script (vedi `_JS_TEMA`) legge se la pagina è chiara o scura e scrive `data-sc-modo` sulla pagina.
+# Senza JavaScript resta il tema chiaro. Gli stessi colori stanno in .streamlit/config.toml.
+RADICE = Path(__file__).resolve().parent.parent
+IMMAGINE_PEZZI = RADICE / "app_assets" / "pezzi_intestazione.png"     # pngegg, uso didattico: NON è su GitHub (vedi .gitignore)
+
+_STILE_PAGINA = """
+<style>
+:root{--sc-quadri:rgba(165,88,45,.07);--sc-cornice:#A5582D;--sc-pannello:#FBF4E4;--sc-nome:#2B2433;--sc-pezzi:#A5582D;
+  --sc-motto:#5E5560;--sc-c1:#E3A66E;--sc-c2:#2B2433;--sc-alone:rgba(165,88,45,.14);--sc-bordo:rgba(165,88,45,.28)}
+:root[data-sc-modo="dark"]{--sc-quadri:rgba(227,166,110,.07);--sc-cornice:#E3A66E;--sc-pannello:#2B2433;--sc-nome:#F3E4BF;
+  --sc-pezzi:#E3A66E;--sc-motto:#C9BBA0;--sc-c1:#E3A66E;--sc-c2:#4A4A6A;--sc-alone:rgba(243,228,191,.16);--sc-bordo:rgba(227,166,110,.3)}
+.stApp{background-image:conic-gradient(var(--sc-quadri) 25%,transparent 0 50%,var(--sc-quadri) 0 75%,transparent 0);
+  background-size:104px 104px;background-attachment:fixed}
+.sc-marchio{position:relative;overflow:hidden;border-radius:14px;border:3px solid var(--sc-cornice);background:var(--sc-pannello);margin:0 0 .8rem}
+.sc-marchio .sc-pannello{position:relative;display:flex;flex-direction:column;justify-content:center;text-align:center;
+  padding:1.3rem 21rem 2rem 2rem;min-height:15.3rem}
+.sc-marchio .sc-fila{position:absolute;z-index:5;left:0;right:0;bottom:0;height:7px;
+  background:repeating-linear-gradient(90deg,var(--sc-c1) 0 7px,var(--sc-c2) 7px 14px)}
+.sc-marchio .sc-testo{position:relative;z-index:3}
+.sc-marchio .sc-nome{font-family:Cambria,Georgia,'Times New Roman',serif;font-weight:700;font-size:3.4rem;line-height:1.1;color:var(--sc-nome)}
+.sc-marchio .sc-pezzi-fila{margin:.1rem 0;font-size:1.3rem;letter-spacing:.45rem;color:var(--sc-pezzi)}
+.sc-marchio .sc-motto{margin:.1rem auto 0;max-width:26rem;font-size:.95rem;color:var(--sc-motto)}
+.sc-marchio .sc-alone{position:absolute;z-index:3;right:1.2rem;bottom:0;width:20rem;height:11.9rem;border-radius:50%;background:var(--sc-alone)}
+.sc-marchio .sc-img{position:absolute;z-index:4;right:2.1rem;bottom:-.25rem;height:14.9rem;width:auto}
+.sc-tema{position:fixed;z-index:1000;right:1.1rem;bottom:1.1rem;width:2.6rem;height:2.6rem;border-radius:50%;cursor:pointer;
+  border:2px solid var(--sc-pannello);background:var(--sc-cornice);color:var(--sc-pannello);font-size:1.25rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.sc-tema:hover{filter:brightness(1.12)}
+@media (max-width:900px){.sc-marchio .sc-pannello{padding-right:12rem;min-height:11rem}.sc-marchio .sc-img{height:10rem}
+  .sc-marchio .sc-alone{width:13rem;height:8rem}.sc-marchio .sc-nome{font-size:2.6rem}}
+@media (max-width:600px){.sc-marchio .sc-img,.sc-marchio .sc-alone{display:none}.sc-marchio .sc-pannello{padding-right:1.5rem;min-height:9rem}
+  .sc-marchio .sc-nome{font-size:2.3rem}}
+</style>
+"""
+
+# Lo script fa solo due cose: (1) ogni mezzo secondo guarda se la pagina è scura e lo scrive su `data-sc-modo` (così i colori seguono
+# anche il menu delle impostazioni); (2) al clic sul pulsante scrive "Light" o "Dark" dove Streamlit conserva la scelta del tema nel
+# browser, per ogni pagina dell'app, e ricarica. Non contatta nessun server. Se in futuro Streamlit cambia questo meccanismo il
+# pulsante smette di funzionare, ma il tema si cambia sempre dal menu ⋮ → Impostazioni.
+_JS_TEMA = """
+<script>
+(function(){
+  if(window.__scTema) return; window.__scTema = 1;
+  function modo(){
+    var a = document.querySelector('.stApp'); if(!a) return 'light';
+    var m = getComputedStyle(a).backgroundColor.match(/\\d+(\\.\\d+)?/g); if(!m) return 'light';
+    return (0.2126*m[0] + 0.7152*m[1] + 0.0722*m[2]) / 255 < 0.5 ? 'dark' : 'light';
+  }
+  function aggiorna(){
+    var d = modo(), r = document.documentElement;
+    if(r.dataset.scModo !== d) r.dataset.scModo = d;
+    var b = document.querySelector('.sc-tema');
+    if(b){ var t = d === 'dark' ? '☀' : '☾'; if(b.textContent !== t) b.textContent = t; }
+  }
+  setInterval(aggiorna, 500); aggiorna();
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.sc-tema'); if(!b) return;
+    var nuovo = document.documentElement.dataset.scModo === 'dark' ? 'Light' : 'Dark';
+    var percorsi = {}; percorsi[location.pathname] = 1;
+    document.querySelectorAll('a[href]').forEach(function(a){
+      try{ var u = new URL(a.href); if(u.origin === location.origin) percorsi[u.pathname] = 1; }catch(err){}
+    });
+    try{ Object.keys(percorsi).forEach(function(p){ localStorage.setItem('stActiveTheme-' + p + '-v2', JSON.stringify(nuovo)); }); }catch(err){}
+    location.reload();
+  });
+})();
+</script>
+"""
+
+
+@lru_cache(maxsize=1)
+def immagine_pezzi_uri() -> str:
+    """L'illustrazione dell'intestazione come "data URI" (incorporata nell'HTML), oppure stringa vuota se il file non c'è."""
+    try:
+        return "data:image/png;base64," + base64.b64encode(IMMAGINE_PEZZI.read_bytes()).decode("ascii")
+    except OSError:
+        return ""
+
+
+def html_intestazione(immagine: str | None = None) -> str:
+    """L'intestazione del sito (marchio, pezzi, motto, riga a scacchi in basso, pulsante del tema) come HTML, senza script: si prova senza
+    avviare l'app. `immagine` = data URI dell'illustrazione (di norma quella in app_assets/); vuota o assente = intestazione senza."""
+    uri = immagine_pezzi_uri() if immagine is None else immagine
+    img = ('<div class="sc-alone" aria-hidden="true"></div>'
+           f'<img class="sc-img" src="{uri}" alt="" aria-hidden="true">') if uri else ""
+    return (f'{_STILE_PAGINA}<div class="sc-marchio"><div class="sc-pannello">'
+            '<div class="sc-testo"><div class="sc-nome">Chess Tutor</div>'
+            '<div class="sc-pezzi-fila" aria-hidden="true">♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜</div>'
+            '<p class="sc-motto">Il tutor di scacchi per principianti: risponde dai suoi documenti e cita sempre la fonte.</p></div>'
+            f'{img}</div><div class="sc-fila" aria-hidden="true"></div></div>'
+            '<button class="sc-tema" type="button" aria-label="Cambia tema chiaro o scuro" title="Cambia tema chiaro o scuro">☾</button>')
+
+
+def mostra_intestazione() -> None:
+    """Sfondo e intestazione, uguali in tutte le pagine: si chiama una volta sola, da app.py."""
+    st.html(html_intestazione() + _JS_TEMA, unsafe_allow_javascript=True)
+
 
 MSG_SENZA_CHIAVE = ("Manca la chiave OpenAI. Copia `.env.example` in `.env`, scrivi la tua `OPENAI_API_KEY` e riavvia l'app "
                     "(`streamlit run app.py`). Senza chiave il tutor non può cercare né rispondere.")

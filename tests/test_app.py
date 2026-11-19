@@ -71,7 +71,7 @@ def test_la_chat_risponde_con_fonti_e_mostra_come_ha_lavorato(ricerche):
     t = tutor_finto(ricerche)
     with patch.object(webapp, "get_tutor", return_value=t):
         at = AppTest.from_file(APP, default_timeout=20).run()
-        assert not at.exception and at.title[0].value == "♟️ Chess Tutor"
+        assert not at.exception and at.title[0].value == "Chiedi al tutor"
         assert len(at.pills[0].options) == 3                          # suggerimenti prima della prima domanda
         at.chat_input[0].set_value("Come funziona l'arrocco?").run()
     assert not at.exception
@@ -91,6 +91,39 @@ def test_il_caricamento_ha_il_cavallo_le_frasi_e_rispetta_riduci_animazioni():
     assert "@keyframes sc-salti" in html                                       # l'animazione del salto
     assert "prefers-reduced-motion" in html                                    # chi ha "riduci animazioni" vede il cavallo fermo
     assert "&lt;b&gt;" in webapp.html_attesa(("<b>x</b>",)) and "<b>x" not in webapp.html_attesa(("<b>x</b>",))   # il testo non può iniettare HTML
+
+
+def test_intestazione_con_marchio_sfondo_e_nessun_javascript():
+    html = webapp.html_intestazione("")
+    assert "Chess Tutor" in html and "sc-marchio" in html and ".stApp" in html          # marchio e sfondo a scacchiera
+    assert "sc-tema" in html and "<img" not in html                                      # pulsante del tema; senza immagine niente <img>
+    assert "<script" not in html.lower() and "onclick" not in html.lower()               # l'HTML è solo HTML e CSS, nessun codice
+
+
+def test_l_intestazione_con_illustrazione_la_incorpora_e_senza_file_non_si_rompe(monkeypatch, tmp_path):
+    assert 'class="sc-img" src="data:image/png;base64,AAAA"' in webapp.html_intestazione("data:image/png;base64,AAAA")
+    monkeypatch.setattr(webapp, "IMMAGINE_PEZZI", tmp_path / "non_esiste.png")
+    webapp.immagine_pezzi_uri.cache_clear()
+    try:
+        assert webapp.immagine_pezzi_uri() == "" and "<img" not in webapp.html_intestazione()      # l'app funziona anche senza il file
+    finally:
+        webapp.immagine_pezzi_uri.cache_clear()
+
+
+def test_lo_script_del_tema_fa_solo_il_suo_lavoro():
+    js = webapp._JS_TEMA
+    assert "stActiveTheme" in js and "'Light'" in js and "'Dark'" in js and "location.reload" in js
+    for vietato in ("fetch(", "XMLHttpRequest", "http://", "https://", "eval(", "document.cookie", "sendBeacon", "WebSocket"):
+        assert vietato not in js, f"lo script non deve contenere {vietato}"                 # nessun contatto con l'esterno
+
+
+def test_l_intestazione_compare_in_tutte_le_pagine_e_non_rompe_nulla(monkeypatch):
+    monkeypatch.setattr(config, "OPENAI_API_KEY", "")                  # senza chiave: nessun tutor vero, nessuna chiamata a pagamento
+    with patch.object(webapp, "mostra_intestazione") as mostra:
+        at = AppTest.from_file(APP, default_timeout=20).run()
+        at.switch_page(PAGINA_QUIZ).run()
+    assert not at.exception
+    assert mostra.call_count >= 2                                                         # ad ogni ricarica, in ogni pagina
 
 
 def spia_attesa():

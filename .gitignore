@@ -14,3 +14,6 @@ data/*/*.pdf
 # Note personali (non fanno parte del progetto pubblicato)
 docs/
 PIANO_PROGETTO.md
+
+# Illustrazione dell'intestazione dell'app (pngegg, solo uso didattico: NON si ridistribuisce; l'app funziona anche senza)
+app_assets/
