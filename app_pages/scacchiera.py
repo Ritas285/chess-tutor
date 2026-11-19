@@ -34,6 +34,8 @@ if modo == LEZIONI:
 
     passo = st.select_slider("Mossa da vedere", options=list(range(len(esiti) + 1)), value=0, format_func=etichetta,
                              key=f"passo_{lez.chiave}")
+    st.info("Questa è la posizione di partenza. **Trascina la pedina** qui sopra verso destra per vedere le mosse una alla volta.",
+            icon=":material/touch_app:")       # sta sotto la pedina e resta sempre visibile
     scacchiera = ct.scacchiera(lez.fen) if passo == 0 else chess.Board(esiti[passo - 1].fen_dopo)
     freccia = None if passo == 0 else esiti[passo - 1].da_a
 
@@ -42,10 +44,8 @@ if modo == LEZIONI:
         st.image(ct.disegna(scacchiera, freccia, dimensione=420), width=420,
                  alt=f"Scacchiera, {etichetta(passo)}: {ct.descrivi_posizione(scacchiera.fen())}")
     with destra:
-        if passo == 0:
-            st.info("Questa è la posizione di partenza. Muovi il cursore qui sopra per vedere le mosse una alla volta.", icon=":material/touch_app:")
-        else:
-            st.markdown(f"#### {etichetta(passo)}")
+        st.markdown(f"#### {etichetta(passo)}")
+        if passo > 0:
             commento = lez.passi[passo - 1].commento
             if scacchiera.is_checkmate():
                 st.success("**Scacco matto!** " + commento, icon=":material/emoji_events:")

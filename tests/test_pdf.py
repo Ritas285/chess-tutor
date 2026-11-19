@@ -104,7 +104,7 @@ def test_i_rami_pdf_esistono_solo_se_abilitati_e_con_dei_pdf(tmp_path):
 
 def test_i_test_vedono_sempre_solo_i_rami_md():
     """tests/conftest.py imposta RAMI_PDF=0: anche con i PDF in data/ e RAMI_PDF=1 nel .env i test restano gli stessi."""
-    assert set(config.BRANCHES) == {"rules", "openings"}
+    assert set(config.BRANCHES) == {"rules", "openings", "tactics"}
 
 
 def test_i_pdf_in_data_non_finiscono_nel_git():

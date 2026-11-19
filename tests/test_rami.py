@@ -11,13 +11,22 @@ FILE_APERTURE = {"01_principi_di_apertura.md", "02_aperture_di_pedone_di_re.md",
 @pytest.fixture(scope="module")
 def ricerche():
     vs, emb = ingest.crea_vector_store(), HashEmbedder()
-    for ramo in ("rules", "openings"):
+    for ramo in ("rules", "openings", "tactics"):
         ingest.indicizza_ramo(vs, emb, ramo, verbose=False)
-    return {ramo: retrieval.Ricerca(vs, emb, ramo) for ramo in ("rules", "openings")}
+    return {ramo: retrieval.Ricerca(vs, emb, ramo) for ramo in ("rules", "openings", "tactics")}
 
 
 def test_i_rami_configurati():
-    assert set(config.BRANCHES) == {"rules", "openings"}
+    assert set(config.BRANCHES) == {"rules", "openings", "tactics"}
+
+
+def test_il_ramo_tattiche_trova_la_forchetta_e_la_scoperta(ricerche):
+    """La dispensa sulle tattiche è nel corpus: la forchetta si trova nel ramo tattiche e non in quelli delle regole o delle aperture."""
+    primi = {(c.metadata["source_file"], c.metadata["sezione"]) for c in ricerche["tactics"].cerca("forchetta", k=3, modo="bm25")}
+    assert ("01_forchetta_inchiodatura_infilata.md", "La forchetta") in primi
+    assert ricerche["tactics"].cerca("scacco di scoperta", k=1, modo="bm25")[0].metadata["source_file"] == "02_scoperta_e_pezzi_indifesi.md"
+    assert {c.metadata["ramo"] for c in ricerche["tactics"].cerca("forchetta", k=3, modo="dense")} == {"tactics"}
+    assert not ricerche["rules"].cerca("forchetta", k=3, modo="bm25") and not ricerche["openings"].cerca("forchetta", k=3, modo="bm25")
 
 
 def test_il_ramo_aperture_trova_la_difesa_siciliana(ricerche):

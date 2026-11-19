@@ -80,7 +80,8 @@ def test_la_chat_risponde_con_fonti_e_mostra_come_ha_lavorato(ricerche):
     dettagli = " ".join(m.value for m in at.chat_message[1].markdown)
     assert "rules" in dettagli and "cerca_rules" in dettagli and ".md" in dettagli
     assert at.expander[0].label == "Come ha lavorato"
-    assert [m.value for m in at.metric if m.label == "Domande in questa sessione"] == ["1"]
+    assert not at.metric                                               # i totali li conta Grafana: nella barra laterale niente contatori
+    assert any("$" in c.value and "token" in c.value for c in at.caption)   # il costo della singola risposta resta sotto la risposta
     assert not at.pills                                                # i suggerimenti spariscono dopo la prima domanda
 
 
@@ -93,11 +94,41 @@ def test_il_caricamento_ha_il_cavallo_le_frasi_e_rispetta_riduci_animazioni():
     assert "&lt;b&gt;" in webapp.html_attesa(("<b>x</b>",)) and "<b>x" not in webapp.html_attesa(("<b>x</b>",))   # il testo non può iniettare HTML
 
 
+def test_il_caricamento_dell_indice_ha_la_pedina_che_gira_e_rispetta_riduci_animazioni():
+    html = webapp.html_indice()
+    assert 'role="status"' in html and "♟" in html and "Preparo l&#x27;indice dei documenti" in html     # pedina e frase, annunciate
+    assert "@keyframes sc-gira" in html and "rotateY(360deg)" in html                                     # la pedina gira su se stessa
+    assert "prefers-reduced-motion" in html                                                               # chi ha "riduci animazioni" la vede ferma
+    assert "<script" not in html.lower() and "&lt;b&gt;" in webapp.html_indice("<b>x</b>")               # solo CSS; il testo non inietta HTML
+
+
+def test_la_pedina_compare_solo_la_prima_volta_e_poi_viene_tolta(ricerche):
+    eventi = []
+    spia = MagicMock()
+    spia.return_value.empty.side_effect = lambda: eventi.append("tolta")
+    spia.side_effect = lambda *a, **k: (eventi.append("mostrata"), spia.return_value)[1]
+    with patch.object(webapp, "get_tutor", return_value=tutor_finto(ricerche)), patch.object(webapp, "attesa_indice", spia):
+        at = AppTest.from_file(APP, default_timeout=20).run()
+        assert not at.exception and eventi == ["mostrata", "tolta"]       # mostrata, poi tolta appena il tutor è pronto
+        at.chat_input[0].set_value("Come funziona l'arrocco?").run()
+    assert not at.exception and eventi == ["mostrata", "tolta"]           # alle ricariche successive non ricompare
+
+
 def test_intestazione_con_marchio_sfondo_e_nessun_javascript():
     html = webapp.html_intestazione("")
     assert "Chess Tutor" in html and "sc-marchio" in html and ".stApp" in html          # marchio e sfondo a scacchiera
-    assert "sc-tema" in html and "<img" not in html                                      # pulsante del tema; senza immagine niente <img>
+    assert "sc-tema" in html and 'class="sc-img"' not in html                            # pulsante del tema; senza illustrazione niente immagine
+    assert 'class="sc-luna"' in html and 'class="sc-sole"' in html                       # la pedina con la luna (tema chiaro) e col sole (scuro)
+    assert html.count("data:image/svg+xml;base64,") == 2                                 # incorporate come immagini: Streamlit toglie gli SVG nella pagina
     assert "<script" not in html.lower() and "onclick" not in html.lower()               # l'HTML è solo HTML e CSS, nessun codice
+
+
+def test_le_icone_della_chat_sono_la_pedina_e_il_cavallo():
+    assert webapp.AVATAR == {"user": ":material/chess_pawn:", "assistant": ":material/chess_knight:"}
+    css = webapp._STILE_PAGINA
+    assert "stChatMessageAvatarCustom" in css and "from user" in css and "from assistant" in css      # colori del legno, uno per ruolo
+    assert "♟" in css and "stSlider" in css and "stSelectSlider" in css                                  # il cursore della scacchiera è una pedina
+    assert '--sc-pista' in css                                                                           # linea sottile a scacchi per tutti i cursori
 
 
 def test_l_intestazione_con_illustrazione_la_incorpora_e_senza_file_non_si_rompe(monkeypatch, tmp_path):
@@ -105,7 +136,7 @@ def test_l_intestazione_con_illustrazione_la_incorpora_e_senza_file_non_si_rompe
     monkeypatch.setattr(webapp, "IMMAGINE_PEZZI", tmp_path / "non_esiste.png")
     webapp.immagine_pezzi_uri.cache_clear()
     try:
-        assert webapp.immagine_pezzi_uri() == "" and "<img" not in webapp.html_intestazione()      # l'app funziona anche senza il file
+        assert webapp.immagine_pezzi_uri() == "" and 'class="sc-img"' not in webapp.html_intestazione()      # l'app funziona anche senza il file
     finally:
         webapp.immagine_pezzi_uri.cache_clear()
 
@@ -115,6 +146,14 @@ def test_lo_script_del_tema_fa_solo_il_suo_lavoro():
     assert "stActiveTheme" in js and "'Light'" in js and "'Dark'" in js and "location.reload" in js
     for vietato in ("fetch(", "XMLHttpRequest", "http://", "https://", "eval(", "document.cookie", "sendBeacon", "WebSocket"):
         assert vietato not in js, f"lo script non deve contenere {vietato}"                 # nessun contatto con l'esterno
+
+
+def test_il_cambio_tema_usa_il_menu_di_streamlit_senza_ricaricare_la_pagina():
+    js = webapp._JS_TEMA
+    assert "stMainMenuItem-theme-" in js and "sc-cambio" in js          # via normale: preme la voce del tema, la sessione resta com'è
+    via_normale = js.split("function ricarica")[0]
+    assert "location.reload" not in via_normale                         # il ricaricamento (che azzera lezione e chat) è solo il piano B
+    assert ":root.sc-cambio [data-testid=\"stMainMenuPopover\"]" in webapp._STILE_PAGINA   # il menu non lampeggia mentre lo usiamo
 
 
 def test_l_intestazione_compare_in_tutte_le_pagine_e_non_rompe_nulla(monkeypatch):
@@ -168,7 +207,7 @@ def test_il_trucco_viene_fermato_e_l_app_non_va_in_errore(ricerche):
         at.chat_input[0].set_value(TRUCCO).run()
     assert not at.exception
     assert "Non posso rispondere" in unisci(at.warning) and t.client.structured_calls == 0      # fermata prima del modello
-    assert [m.value for m in at.metric if m.label == "Costo stimato"] == ["$0.0000"]
+    assert not at.metric and any("$0.00000" in c.value for c in at.caption)                  # costo zero, mostrato sotto la risposta
 
 
 def test_il_suggerimento_del_trucco_funziona_come_una_domanda_scritta(ricerche):
@@ -195,7 +234,6 @@ def test_nuova_conversazione_svuota_la_chat_e_riporta_i_suggerimenti(ricerche):
         assert len(at.chat_message) == 2
         at.button(key="nuova").click().run()
     assert not at.exception and len(at.chat_message) == 0 and len(at.pills[0].options) == 3
-    assert [m.value for m in at.metric if m.label == "Domande in questa sessione"] == ["0"]
 
 
 # ---------- il quiz ----------
@@ -418,6 +456,17 @@ def test_una_lezione_si_vede_una_mossa_alla_volta_con_il_suo_commento():
     assert "**4. O-O**" in unisci(at.caption)                                      # la mossa corrente in grassetto
     at.select_slider(key="passo_arrocco_corto").set_value(1).run()
     assert "Il Bianco occupa il centro" in unisci(at.info)
+
+
+def test_il_riquadro_sotto_la_pedina_dice_cosa_fare_e_resta_sempre_visibile():
+    at = pagina_scacchiera("Lezioni")
+    assert not at.exception and not at.button                                                            # niente pulsanti Avanti / Indietro
+    suggerimento = [i.value for i in at.info if "posizione di partenza" in i.value]
+    assert suggerimento and "Trascina la pedina" in suggerimento[0] and "cursore" not in suggerimento[0].lower()   # parole semplici
+    assert "#### Inizio" in " ".join(m.value for m in at.markdown)                                      # a destra: il titolo «Inizio»
+    at.select_slider(key="passo_arrocco_corto").set_value(1).run()
+    assert not at.exception and any("posizione di partenza" in i.value for i in at.info)                    # il riquadro resta anche dopo la prima mossa
+    assert "Il Bianco occupa il centro" in unisci(at.info)                                                   # a destra c'è il commento della mossa
 
 
 def test_si_cambia_argomento_e_lezione_e_il_matto_si_riconosce():

@@ -66,7 +66,7 @@ domanda ─► router (LLM) ─► ricerca nei rami scelti (fatta dal CODICE) �
   memoria (con "auto" lo faceva su domande fuori corpus) e si risparmia un giro verso il modello, il primo, che serviva solo a decidere un
   tool già deciso dal codice (**p50 da 6,7 a 4,9 secondi**, misurato). L'agente può comunque cercare ancora con i suoi strumenti, e non ha
   nessuno strumento con effetti verso l'esterno (minimo privilegio, S15). Per tornare al vecchio percorso: `Tutor(..., ricerca_iniziale=False)`.
-- **Rami** (`chess_tutor/config.py`): `rules` (regole e notazione) e `openings` (aperture). Aggiungere un ramo = una riga in
+- **Rami** (`chess_tutor/config.py`): `rules` (regole e notazione), `openings` (aperture) e `tactics` (tattiche: forchetta, inchiodatura, infilata). Aggiungere un ramo = una riga in
   `config.py` + una cartella in `data/` con i documenti `.md`.
 
 ## Sicurezza (Step 1e, lezione S15)
@@ -97,7 +97,7 @@ gli attributi di datapizza-ai per Phoenix (`chess_tutor/otel_phoenix_bridge.py`)
 metriche sono locali: nulla esce dal computer.
 
 ## Valutazione (Step 1f, lezione S08)
-Un **gold** di 33 domande (`evals/gold.json`: regole, aperture, domande a due rami, fuori corpus, fuori tema, un attacco) e uno
+Un **gold** di 37 domande (`evals/gold.json`: regole, aperture, tattiche, domande a due rami, fuori corpus, fuori tema, un attacco) e uno
 script che misura, con i numeri, invece di andare a intuito:
 - **routing** (il router sceglie i rami giusti?), **recall@3** e **MRR** (la fonte giusta è tra i primi 3? quanto in alto?);
 - sulle risposte vere: **citazione**, **astensione** ("Non lo so" quando i documenti non bastano), **falsa astensione**,
@@ -165,7 +165,12 @@ python mcp_server.py                          # stdio: lo lancia l'host come sot
 python examples/prova_client_mcp.py           # un client Python lo usa: ricerca, verifica, resource e un quiz sulla dispensa di esempio
 python evals/valuta_verifica.py               # 16 risposte di esito noto: quanto è affidabile la verifica
 python evals/valuta_quiz.py                   # 3 documenti: domande valide, sostegno della citazione, giro genera-rispondi-verifica
+python evals/valuta_sinonimi.py --ripeti 3    # il giudice capisce le parole diverse? 8 sinonimi + 8 trabocchetti, 3 giri
 ```
+Il giudice del quiz usa solo il documento allegato, quindi una risposta giusta con parole diverse («a L» invece di «un sette») può
+essere segnata parziale o errata. Misurato con `valuta_sinonimi.py` (3 giri, 24 sinonimi): 15/24 accettati con il prompt di oggi, 14/24 con
+due regole aggiuntive provate; i trabocchetti sono sempre respinti (24/24, errori gravi 0). Nessun miglioramento: prompt invariato,
+limite dichiarato (risultati in `evals/results/*_sinonimi_*.json`).
 Negli host il `command` deve puntare al Python del `.venv` (`...\.venv\Scripts\python.exe`) e `args` al percorso assoluto di `mcp_server.py`.
 
 ### Provato con un host vero: VS Code e Copilot (Step 2c)
@@ -278,7 +283,7 @@ I comandi che usano il modello consumano la chiave OpenAI (circa $0,0003 a doman
 ## Limiti noti (detti apertamente)
 - **Latenza**: p50 circa 4,9 secondi a risposta (era 5,5-6,7 prima di far fare la prima ricerca al codice): il budget di 4 secondi **ancora non è rispettato**; la fase più lunga resta la scrittura della risposta (circa 3 s). Costo circa $0,0003 a domanda.
 - **Nessuna memoria della conversazione**: ogni domanda è a sé ("e quello lungo?" non si capisce).
-- **Due soli rami in Markdown** (regole e aperture), scritti per il progetto, più due rami PDF opzionali (vedi sopra): i rami tattiche, finali e strategia in Markdown non sono stati fatti.
+- **Tre rami in Markdown** (regole, aperture e tattiche), scritti per il progetto, più due rami PDF opzionali (vedi sopra): i rami finali e strategia in Markdown non sono stati fatti. Il ramo tattiche (forchetta, inchiodatura, infilata, scoperta) è l'ultimo arrivato: 4 domande nuove nel gold (G34-G37, gold da 33 a 37), routing sulle vecchie domande invariato (errori sempre G24 e G26).
 - **Rami PDF**: i PDF non sono nel repository (diritti) e le mosse al loro interno non si verificano con `python-chess`; accesi insieme a `rules` e `openings` peggiorano il routing sul gold vecchio (−0,10).
 - **Le domande a due argomenti** vanno su un ramo solo (l'agente fa una ricerca obbligata in un ramo); nel gold sono i casi G24 e G26.
 - L'agente del tutor **non usa ancora** lo strumento che verifica le mosse (c'è nella scheda Scacchiera e nel server MCP).

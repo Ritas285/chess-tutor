@@ -13,7 +13,7 @@ from chess_tutor.valutazione import Voto
 def test_il_gold_e_ben_formato():
     gold = valutazione.carica_gold()
     ids = [d["id"] for d in gold]
-    assert len(gold) == 33 and len(set(ids)) == 33
+    assert len(gold) == 37 and len(set(ids)) == 37
     assert {d["tipo"] for d in gold} == {"in_corpus", "fuori_corpus", "fuori_tema", "attacco"}
     for d in gold:
         if d["tipo"] == "in_corpus":

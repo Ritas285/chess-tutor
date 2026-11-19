@@ -43,6 +43,9 @@ BRANCHES: dict[str, Branch] = {b.key: b for b in [
     Branch("openings", "Aperture",
            "Principi di apertura, Italiana, Spagnola, Siciliana, Francese, Gambetto di Donna, Londra, Indiana di Re, "
            "trappole e matti rapidi (matto del barbiere, matto del pazzo)."),
+    Branch("tactics", "Tattiche",
+           "Tattiche per vincere materiale: forchetta (attacco doppio), inchiodatura, infilata, scacco di scoperta, forchetta di "
+           "pedone, pezzi indifesi, come cercare una tattica e come difendersi dalle minacce dell'avversario."),
 ]}
 
 # Rami OPZIONALI con documenti PDF trovati online (Step 6, richiesta di Giuseppe: md contro PDF). I PDF non stanno nel git (diritti

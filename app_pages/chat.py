@@ -9,29 +9,26 @@ SUGGERIMENTI = {
 }
 
 st.title("Chiedi al tutor", icon=":material/chat:")
-st.caption("Risponde dai suoi documenti (regole e aperture) e cita la fonte. "
+st.caption("Risponde dai suoi documenti (regole, aperture e tattiche) e cita la fonte. "
            "Ogni domanda è a sé: la memoria della conversazione non c'è ancora.")
 
 tutor = webapp.tutor_o_ferma()
 st.session_state.setdefault("messaggi", [])
-st.session_state.setdefault("sessione", {"domande": 0, "costo": 0.0})
 
 
 def nuova_conversazione():
     st.session_state.messaggi = []
-    st.session_state.sessione = {"domande": 0, "costo": 0.0}
 
 
+# I totali (costo medio, domande) li conta Grafana: qui resta solo il costo di ogni singola risposta, sotto la risposta.
 with st.sidebar:
     st.button("Nuova conversazione", icon=":material/refresh:", on_click=nuova_conversazione, width="stretch", key="nuova")
-    st.metric("Domande in questa sessione", st.session_state.sessione["domande"])
-    st.metric("Costo stimato", f"${st.session_state.sessione['costo']:.4f}")
     st.caption("Modello: " + tutor.client.model_name)
 
 for messaggio in st.session_state.messaggi:
     webapp.mostra_messaggio(messaggio)
 
-domanda = st.chat_input("Chiedi qualcosa su regole e aperture", submit_mode="disable")
+domanda = st.chat_input("Chiedi qualcosa su regole, aperture e tattiche", submit_mode="disable")
 
 if not st.session_state.messaggi:           # i suggerimenti spariscono appena inizia la conversazione
     segnaposto = st.empty()
@@ -53,6 +50,3 @@ if domanda:
     assistente = webapp.messaggio_da_risposta(risposta)
     st.session_state.messaggi.append(assistente)
     webapp.mostra_messaggio(assistente)
-    st.session_state.sessione["domande"] += 1
-    st.session_state.sessione["costo"] += risposta.costo_usd
-    st.rerun()                              # aggiorna i contatori nella barra laterale
