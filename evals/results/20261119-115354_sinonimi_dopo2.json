@@ -1,0 +1,504 @@
+{
+ "modo": "sinonimi",
+ "etichetta": "dopo2",
+ "modello": "gpt-4o-mini",
+ "riassunto": {
+  "n_domande": 48,
+  "n": {},
+  "errori": {
+   "sinonimi": [
+    "S01",
+    "S03",
+    "S06",
+    "S07"
+   ]
+  },
+  "misure": {
+   "sinonimi_accettati": 0.5833,
+   "trabocchetti_respinti": 1.0,
+   "sinonimi_errori_gravi": 0
+  }
+ },
+ "righe": [
+  {
+   "giro": 1,
+   "id": "S01",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "La risposta contiene un elemento corretto riguardo al movimento del cavallo, ma è imprecisa perché non menziona che si tratta di 'due passi avanti e uno di lato', bensì usa 'due case in una direzione'. Inoltre, non chiarisce che il movimento segue una forma simile a un sette."
+  },
+  {
+   "giro": 1,
+   "id": "S02",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai descritto correttamente il movimento dell'alfiere, specificando che si muove in diagonale e può muoversi per quante case desidera. Ottima risposta!"
+  },
+  {
+   "giro": 1,
+   "id": "S03",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è giusta perché descrive correttamente il movimento della torre in linea retta sulle righe e colonne. Mancano solo i dettagli sulla possibilità di muoversi per più case e il fatto che non può saltare altri pezzi."
+  },
+  {
+   "giro": 1,
+   "id": "S04",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai espresso correttamente il valore della donna, utilizzando un'espressione alternativa. La tua risposta riporta l'essenziale del riferimento."
+  },
+  {
+   "giro": 1,
+   "id": "S05",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La tua definizione di stallo è corretta, poiché hai indicato che il giocatore non può muovere e non è sotto scacco. Hai anche incluso che la partita finisce in pareggio, il che è giusto."
+  },
+  {
+   "giro": 1,
+   "id": "S06",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "La risposta menziona correttamente che il re si muove verso la torre e che entrambi i pezzi devono non essersi mai mossi. Tuttavia, manca il concetto che la torre 'salta' dall'altro lato del re e non si parla del numero di case specifico."
+  },
+  {
+   "giro": 1,
+   "id": "S07",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "Hai giustamente descritto che il pedone cattura in diagonale. Tuttavia, manca di specificare che il movimento avviene 'di una casa in avanti', che è un elemento essenziale della cattura del pedone."
+  },
+  {
+   "giro": 1,
+   "id": "S08",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo descrive correttamente la situazione dello scacco matto: il re è attaccato e il giocatore non può salvarlo. Tuttavia, sarebbe utile menzionare che la partita termina con la sconfitta del giocatore."
+  },
+  {
+   "giro": 1,
+   "id": "T01",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta descrive un movimento del cavallo in modo impreciso, affermando che si muove in diagonale e per quante case vuole, il che è sbagliato. Il cavallo si muove invece seguendo un movimento a forma di sette, specificamente due case in avanti e una di lato."
+  },
+  {
+   "giro": 1,
+   "id": "T02",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è errata perché afferma che l'alfiere si muove a forma di 'L' come il cavallo, mentre l'alfiere si muove solo in diagonale e non a forma di 'L'. Inoltre, l'alfiere può muoversi per un numero qualsiasi di case in diagonale."
+  },
+  {
+   "giro": 1,
+   "id": "T03",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è sbagliata perché afferma che la torre si muove in obliquo, mentre si muove solo in orizzontale o in verticale. Inoltre, manca l'indicazione che non può saltare altri pezzi."
+  },
+  {
+   "giro": 1,
+   "id": "T04",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è errata perché afferma che la donna vale cinque pedoni, mentre il riferimento indica che la donna vale 9 punti. Non c'è alcun elemento giusto nella risposta."
+  },
+  {
+   "giro": 1,
+   "id": "T05",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta afferma che il re è attaccato, mentre lo stallo si verifica quando non è sotto scacco. Inoltre, la definizione di non avere mosse legali è essenziale e manca nella risposta."
+  },
+  {
+   "giro": 1,
+   "id": "T06",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta contiene informazioni errate: il re non fa tre passi e la torre non resta ferma. Mancano anche dettagli importanti come il movimento corretto del re e della torre."
+  },
+  {
+   "giro": 1,
+   "id": "T07",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è sbagliata perché afferma che il pedone mangia il pezzo che ha davanti, mentre in realtà cattura in diagonale. Questo è un elemento essenziale da capire sul movimento del pedone."
+  },
+  {
+   "giro": 1,
+   "id": "T08",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è errata perché confonde lo scacco matto con la patta. Lo scacco matto si verifica quando il re è sotto attacco e non ha mosse valide per evitare la situazione, mentre nella patta il re non è attaccato."
+  },
+  {
+   "giro": 2,
+   "id": "S01",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "La risposta menziona il movimento del cavallo, ma indica 'due case in una direzione' invece di 'due passi avanti', che è essenziale. Manca dunque una formulazione corretta riguardo alla direzione del movimento."
+  },
+  {
+   "giro": 2,
+   "id": "S02",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "L'allievo ha descritto correttamente il movimento dell'alfiere, specificando che si muove in obliquo e senza saltare. Tuttavia, sarebbe stato utile usare il termine 'diagonale' per migliorare la precisione della risposta."
+  },
+  {
+   "giro": 2,
+   "id": "S03",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai descritto correttamente il movimento della torre, indicando che si muove in linea retta. Manca solo l'informazione che può muoversi di quante case vuole in orizzontale o in verticale."
+  },
+  {
+   "giro": 2,
+   "id": "S04",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è corretta perché esprime esattamente il valore della donna, utilizzando una formulazione diversa ma mantenendo il significato essenziale."
+  },
+  {
+   "giro": 2,
+   "id": "S05",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai descritto correttamente lo stallo come una situazione in cui il giocatore non può effettuare mosse legali e il suo re non è sotto scacco. Tuttavia, è importante notare che non è necessario specificare che il re non sia attaccato, poiché la mancanza di mosse legali implica già che non ci sia scacco."
+  },
+  {
+   "giro": 2,
+   "id": "S06",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "Hai descritto correttamente il movimento del re e della torre, ma sarebbe utile specificare che il re 'salta' oltre alla torre. Inoltre, il termine 'due passi' dovrebbe essere corretto in 'due case'."
+  },
+  {
+   "giro": 2,
+   "id": "S07",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "Hai menzionato che il pedone cattura in obliquo, il che è corretto. Tuttavia, mancava di specificare che la cattura avviene di una casa in avanti."
+  },
+  {
+   "giro": 2,
+   "id": "S08",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è corretta perché spiega che il re è attaccato e non può essere salvato, quindi il giocatore perde. Tuttavia, manca una menzione esplicita che la partita finisce con lo scacco matto."
+  },
+  {
+   "giro": 2,
+   "id": "T01",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta afferma che il cavallo si muove in diagonale, il che è sbagliato, dato che il suo movimento è a forma di sette, ovvero due case in una direzione e una di lato. Manca quindi la descrizione corretta del suo movimento."
+  },
+  {
+   "giro": 2,
+   "id": "T02",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è errata perché l'alfiere si muove in diagonale, non 'a L' come il cavallo. È importante conoscere la direzione corretta del movimento degli pezzi."
+  },
+  {
+   "giro": 2,
+   "id": "T03",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta afferma che la torre si muove in obliquo, il che è sbagliato. In realtà, la torre si muove solo in orizzontale o in verticale."
+  },
+  {
+   "giro": 2,
+   "id": "T04",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è errata perché sostiene che la donna vale cinque pedoni, mentre nel riferimento si afferma chiaramente che la donna vale 9 punti. Non c'è alcun elemento corretto nella tua risposta."
+  },
+  {
+   "giro": 2,
+   "id": "T05",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta confonde lo stallo con la situazione di scacco. Infatti, nello stallo il re non deve essere sotto scacco e non può effettuare mosse legali, portando a una patta."
+  },
+  {
+   "giro": 2,
+   "id": "T06",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è errata perché afferma che il re fa tre passi, mentre nel riferimento si dice che il re si sposta di due case. Inoltre, la torre non rimane ferma, ma deve muoversi dall'altra parte del re."
+  },
+  {
+   "giro": 2,
+   "id": "T07",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è errata perché afferma che il pedone cattura in linea retta, mentre in realtà cattura in diagonale. È importante ricordare che la cattura avviene sempre di una casa in avanti e non in linea retta."
+  },
+  {
+   "giro": 2,
+   "id": "T08",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è errata perché confonde lo scacco matto con la patta. Lo scacco matto si verifica quando il re è sotto scacco e non ha mosse per evitarlo, mentre nella patta il re non è attaccato."
+  },
+  {
+   "giro": 3,
+   "id": "S01",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "La risposta è parzialmente corretta perché descrive il movimento del cavallo, ma non specifica che si tratta di un movimento a forma di sette. Inoltre, la risposta menziona solo 'due case in una direzione' senza chiarire che i due passi possono essere anche indietro."
+  },
+  {
+   "giro": 3,
+   "id": "S02",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai descritto correttamente il movimento dell'alfiere, indicando che si muove in obliquo e per quante case vuole. L'unico dettaglio che avresti potuto migliorare è la precisione terminologica, usando 'diagonale' invece di 'obliquo'."
+  },
+  {
+   "giro": 3,
+   "id": "S03",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "La risposta dell'allievo è corretta nel descrivere il movimento della torre in linea retta, ma manca l'informazione che specifica che la torre può muoversi per un numero qualsiasi di case in orizzontale o verticalmente."
+  },
+  {
+   "giro": 3,
+   "id": "S04",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta dell'allievo esprime correttamente il valore della donna, utilizzando un'espressione equivalente. Non manca nulla di essenziale rispetto al riferimento."
+  },
+  {
+   "giro": 3,
+   "id": "S05",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai descritto correttamente lo stallo: il giocatore non può muovere pezzi e il re non è sotto scacco, il che porta al pareggio. Ottimo lavoro!"
+  },
+  {
+   "giro": 3,
+   "id": "S06",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "Hai menzionato che il re si muove verso la torre, il che è corretto, ma hai confuso il movimento della torre, che non si mette semplicemente accanto ma salta dall'altra parte del re. Inoltre, la frase 'fa due passi' dovrebbe essere 'si sposta di due case'."
+  },
+  {
+   "giro": 3,
+   "id": "S07",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "parziale",
+   "giusto": false,
+   "grave": false,
+   "feedback": "Hai espresso correttamente che il pedone cattura in diagonale, ma manca di specificare che lo fa di una casa in avanti. Inoltre, l'idea di 'mangiare' il pezzo è un linguaggio informale che va evitato."
+  },
+  {
+   "giro": 3,
+   "id": "S08",
+   "gruppo": "sinonimo",
+   "atteso": "corretta",
+   "esito": "corretta",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La tua definizione di scacco matto è corretta, in quanto descrivi che il re è attaccato e non può salvarsi, portando alla sconfitta del giocatore. Hai espresso l'idea essenziale del riferimento."
+  },
+  {
+   "giro": 3,
+   "id": "T01",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta afferma che il cavallo si muove in diagonale, ma questo non è corretto. Il cavallo si muove a forma di sette, eseguendo due passi avanti e uno di lato."
+  },
+  {
+   "giro": 3,
+   "id": "T02",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è completamente errata, poiché descrive il movimento dell'alfiere come se fosse quello del cavallo. L'alfiere si muove in diagonale, non a forma di 'L' come il cavallo."
+  },
+  {
+   "giro": 3,
+   "id": "T03",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "Hai affermato che la torre si muove in obliquo, ma questo è sbagliato. La torre si muove solo in orizzontale o in verticale."
+  },
+  {
+   "giro": 3,
+   "id": "T04",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è errata perché afferma che la donna vale cinque pedoni, mentre nel riferimento è specificato che la donna vale 9 punti. Questo significa che il valore riportato non è corretto."
+  },
+  {
+   "giro": 3,
+   "id": "T05",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La tua risposta è errata perché confonde lo stallo con una situazione di scacco. Lo stallo si verifica quando il giocatore che deve muovere non è sotto scacco, ma non ha mosse legali disponibili."
+  },
+  {
+   "giro": 3,
+   "id": "T06",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è errata perché afferma che il re fa tre passi, mentre nel riferimento si dice che il re si sposta di due case. Inoltre, non viene menzionato che la torre si muove dall'altra parte del re."
+  },
+  {
+   "giro": 3,
+   "id": "T07",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La tua risposta è sbagliata perché afferma che il pedone mangia il pezzo davanti, mentre in realtà cattura in diagonale. È importante ricordare come si muove e cattura il pedone."
+  },
+  {
+   "giro": 3,
+   "id": "T08",
+   "gruppo": "trabocchetto",
+   "atteso": "errata",
+   "esito": "errata",
+   "giusto": true,
+   "grave": false,
+   "feedback": "La risposta è errata perché descrive una situazione di patta e non di scacco matto. Lo scacco matto si verifica quando il re è sotto attacco e non può scappare, portando alla sconfitta del giocatore."
+  }
+ ]
+}
