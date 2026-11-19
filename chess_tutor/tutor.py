@@ -83,6 +83,11 @@ class Risposta:
     def costo_usd(self) -> float:
         return (self.token_prompt * config.PRICE_IN + self.token_completati * config.PRICE_OUT) / 1_000_000
 
+    @property
+    def costo_eur(self) -> float:
+        """Lo stesso costo in euro (cambio approssimato `config.EUR_PER_USD`): è quello che si mostra nell'app."""
+        return self.costo_usd * config.EUR_PER_USD
+
 
 def _cerca_tracciata(ricerca: Ricerca, domanda: str, k: int) -> list:
     """La ricerca dentro uno span RETRIEVER: in Phoenix si vedono i documenti recuperati (S11). Se il tracing non è attivo lo
@@ -276,7 +281,7 @@ def _stampa(r: Risposta) -> None:
         print(f"  strumenti usati        : {', '.join(r.tool_usati) or '—'}")
         print(f"  fonti trovate          : {'; '.join(r.fonti) or '—'}")
     print(f"  intervento dei guardrail: {'; '.join(r.note) or '—'}")
-    print(f"  latenza {r.latenza_s:.1f}s · token {r.token_prompt}+{r.token_completati} · costo ${r.costo_usd:.5f}")
+    print(f"  latenza {r.latenza_s:.1f}s · token {r.token_prompt}+{r.token_completati} · costo €{r.costo_eur:.5f}")
     print(f"  registro di audit      : {config.AUDIT_PATH}")
 
 

@@ -130,6 +130,7 @@ def test_fuori_tema_non_chiama_l_agente(ricerche):
 def test_costo_a_domanda():
     r = tutor.Risposta(testo="x", token_prompt=1_000_000, token_completati=1_000_000)
     assert r.costo_usd == pytest.approx(config.PRICE_IN + config.PRICE_OUT)
+    assert r.costo_eur == pytest.approx(r.costo_usd * config.EUR_PER_USD) and r.costo_eur < r.costo_usd      # in euro, col cambio approssimato (0,92)
 
 
 # ---------- con LLM vero (si saltano senza chiave; costo: frazioni di centesimo) ----------

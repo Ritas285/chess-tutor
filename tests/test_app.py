@@ -81,7 +81,7 @@ def test_la_chat_risponde_con_fonti_e_mostra_come_ha_lavorato(ricerche):
     assert "rules" in dettagli and "cerca_rules" in dettagli and ".md" in dettagli
     assert at.expander[0].label == "Come ha lavorato"
     assert not at.metric                                               # i totali li conta Grafana: nella barra laterale niente contatori
-    assert any("$" in c.value and "token" in c.value for c in at.caption)   # il costo della singola risposta resta sotto la risposta
+    assert any("€" in c.value and "token" in c.value and "$" not in c.value for c in at.caption)   # il costo della singola risposta, in euro, sotto la risposta
     assert not at.pills                                                # i suggerimenti spariscono dopo la prima domanda
 
 
@@ -207,7 +207,7 @@ def test_il_trucco_viene_fermato_e_l_app_non_va_in_errore(ricerche):
         at.chat_input[0].set_value(TRUCCO).run()
     assert not at.exception
     assert "Non posso rispondere" in unisci(at.warning) and t.client.structured_calls == 0      # fermata prima del modello
-    assert not at.metric and any("$0.00000" in c.value for c in at.caption)                  # costo zero, mostrato sotto la risposta
+    assert not at.metric and any("€0.00000" in c.value for c in at.caption)                  # costo zero, mostrato sotto la risposta
 
 
 def test_il_suggerimento_del_trucco_funziona_come_una_domanda_scritta(ricerche):

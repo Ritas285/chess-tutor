@@ -317,7 +317,7 @@ def messaggio_da_risposta(r: Risposta) -> dict:
             dettagli.append("**Fonti trovate:**\n" + "\n".join(f"- `{f}`" for f in r.fonti))
     dettagli.append(f"**Guardrail:** {'; '.join(r.note) if r.note else 'nessun intervento'}")
     return {"ruolo": "assistant", "testo": r.testo, "tipo": tipo, "dettagli": dettagli,
-            "costo": f"{r.latenza_s:.1f} s · {r.token_prompt + r.token_completati} token · ${r.costo_usd:.5f}",
+            "costo": f"{r.latenza_s:.1f} s · {r.token_prompt + r.token_completati} token · €{r.costo_eur:.5f}",
             "senza_fonti": tipo == "normale" and not r.fonti}
 
 

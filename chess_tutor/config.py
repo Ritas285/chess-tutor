@@ -22,6 +22,9 @@ CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o-mini")
 EMB_MODEL = os.getenv("EMBED_MODEL", "text-embedding-3-small")
 EMB_DIM = 1536
 PRICE_IN, PRICE_OUT = 0.15, 0.60                # $ per 1M token (gpt-4o-mini, listino del corso): per stimare il costo a domanda
+# Il listino è in dollari; l'app mostra il costo in euro con un cambio APPROSSIMATO e fisso (non è un cambio in tempo reale):
+# si cambia con EUR_PER_USD nel .env. Metriche (Prometheus/Grafana) e misure (evals) restano in dollari.
+EUR_PER_USD = float(os.getenv("EUR_PER_USD", "0.92"))
 EMB_NAME = "content_embedding"                  # il nome del vettore deve essere lo stesso in collection, embedder e ricerca
 
 # Manopola del chunking (S07): dimensione massima di un pezzo. Con NodeSplitter (che non ha sovrapposizione) ogni SEZIONE
