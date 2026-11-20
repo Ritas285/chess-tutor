@@ -4,6 +4,11 @@ Progetto finale del corso AITHO GenAI Academy (datapizza-ai 0.1.0). Un principia
 scacchi; un **router** capisce di cosa parla la domanda, un **agente** cerca **solo nei documenti del ramo giusto** (RAG a rami),
 risponde citando le fonti e dice "Non lo so" quando i documenti non bastano.
 
+<p align="center">
+  <img src="immagini/partita_italiana_arrocco.gif" alt="Una partita italiana fino all'arrocco corto, mossa per mossa" width="360">
+  <br><em>Partita italiana fino all'arrocco: la scheda Scacchiera mostra le mosse una alla volta, tutte verificate da python-chess.</em>
+</p>
+
 ## Cosa serve
 - **Windows con PowerShell**: i comandi sono provati lì. Su Linux o macOS il Python dell'ambiente è `.venv/bin/python`.
 - **Python 3.12** già installato. Controlla con `python --version`. Se Windows risponde *"Python was not found"* è solo il collegamento
@@ -50,26 +55,50 @@ senza chiave 284 test passati e 7 saltati e l'app che spiega cosa fare; con la c
 fonte, il trucco fermato a costo zero, il client MCP e le misure.*
 
 ## Come funziona (RAG a rami)
+```mermaid
+flowchart LR
+    D["Domanda"] --> G["Controlli sulla domanda<br/>(codice)"]
+    G -->|bloccata| B["Risposta fissa"]
+    G --> R["Router<br/>(modello)"]
+    R -->|fuori tema| F["Risposta fissa,<br/>nessuna ricerca"]
+    R -->|rami scelti| C["Ricerca nei rami<br/>(fatta dal codice)"]
+    C --> H["Ricerca ibrida:<br/>significato + parole + RRF"]
+    H --> S["Pulizia dei documenti<br/>(codice)"]
+    S --> A["Agente<br/>(modello)"]
+    A -->|"può cercare ancora"| H
+    A --> O["Risposta con fonti<br/>(pulita dal codice)"]
+
+    subgraph rami ["Rami di documenti"]
+        direction TB
+        r1["rules"]
+        r2["openings"]
+        r3["tactics"]
+    end
+    C -.-> rami
 ```
-domanda ─► router (LLM) ─► ricerca nei rami scelti (fatta dal CODICE) ─► agente: risposta con fonti
-              │ rami scelti / fuori tema        └─ ricerca ibrida (significato + parole + RRF)
-              ▼
-        fuori tema: risposta fissa, nessuna ricerca
+
+Altre due strade usano gli stessi pezzi, senza passare dall'agente:
+
+```mermaid
+flowchart LR
+    Q["Quiz"] --> Q1["Domande generate<br/>dai documenti (modello)"] --> Q2["Verifica della risposta<br/>(giudice + documenti)"]
+    S["Scacchiera"] --> S1["python-chess:<br/>mosse e posizioni (codice)"]
+    M["Server MCP"] --> M1["cerca_conoscenza · verifica_mossa<br/>verifica_risposta · genera_quiz · verifica_quiz · mosse_legali"]
 ```
-- **Ingestione** (`chess_tutor/ingest.py`, S07): documenti `.md` → una **sezione = un pezzo** con `[titolo — sezione]` davanti
-  (*contextual retrieval*, S08) → embedding → Qdrant in memoria. Una collection per ramo.
-- **Ricerca** (`chess_tutor/retrieval.py`, S08): per **significato** (embedding), per **parole** (BM25) e **ibrida** (RRF).
+- **Ingestione** (`chess_tutor/ingest.py`): documenti `.md` → una **sezione = un pezzo** con `[titolo — sezione]` davanti
+  (*contextual retrieval*) → embedding → Qdrant in memoria. Una collection per ramo.
+- **Ricerca** (`chess_tutor/retrieval.py`): per **significato** (embedding), per **parole** (BM25) e **ibrida** (RRF).
 - **Router** (`chess_tutor/router.py`): una chiamata al modello che compila un modulo (Pydantic): la domanda riguarda gli scacchi?
   in quali rami cercare? Il prompt è stato scelto misurando 5 varianti.
-- **Tutor** (`chess_tutor/tutor.py`, S03/S11): prompt di sistema + agente datapizza-ai con un tool per ramo. La **prima ricerca
+- **Tutor** (`chess_tutor/tutor.py`): prompt di sistema + agente datapizza-ai con un tool per ramo. La **prima ricerca
   la fa il codice** nei rami scelti dal router (sanificata come sempre) e i passaggi vanno sotto la domanda: il modello non può rispondere a
   memoria (con "auto" lo faceva su domande fuori corpus) e si risparmia un giro verso il modello, il primo, che serviva solo a decidere un
   tool già deciso dal codice (**p50 da 6,7 a 4,9 secondi**, misurato). L'agente può comunque cercare ancora con i suoi strumenti, e non ha
-  nessuno strumento con effetti verso l'esterno (minimo privilegio, S15). Per tornare al vecchio percorso: `Tutor(..., ricerca_iniziale=False)`.
+  nessuno strumento con effetti verso l'esterno (minimo privilegio). Per tornare al vecchio percorso: `Tutor(..., ricerca_iniziale=False)`.
 - **Rami** (`chess_tutor/config.py`): `rules` (regole e notazione), `openings` (aperture) e `tactics` (tattiche: forchetta, inchiodatura, infilata). Aggiungere un ramo = una riga in
   `config.py` + una cartella in `data/` con i documenti `.md`.
 
-## Sicurezza (Step 1e, lezione S15)
+## Sicurezza (Step 1e)
 Controlli deterministici nel codice (`chess_tutor/guardrails.py`), su passaggi diversi:
 **domanda** (injection, lunghezza: bloccata *prima* del modello) → **documenti recuperati** (le frasi che sembrano ordini
 nascosti vengono tolte) → **risposta** (via link esterni e segreti) → **citazioni** (valgono solo se la fonte è stata davvero
@@ -78,7 +107,7 @@ Ogni domanda lascia una riga in `logs/audit.jsonl` (cosa è stato deciso, non il
 Il **retest** (`tests/test_sicurezza.py`, `evals/retest_sicurezza.py`) lancia lo stesso attacco con le barriere spente e accese.
 Limite onesto: le regole a parole chiave si aggirano; per questo ci sono più barriere e la prompt injection si mitiga, non si elimina.
 
-## Osservabilità (Step 1g, lezione S11)
+## Osservabilità (Step 1g)
 Due livelli, entrambi opzionali (se non sono attivi il tutor funziona uguale):
 - **Trace → Phoenix** (`http://localhost:6006`): per ogni domanda l'albero router / agente / modello / ricerca, il prompt, i
   **documenti recuperati** e i token. Risponde a *"perché questa risposta è così?"*.
@@ -93,10 +122,10 @@ python -m chess_tutor.tutor --osserva --chat                 # resta in attesa d
 docker compose -f observability/docker-compose.yml down      # spegne lo stack
 ```
 Prometheus legge le metriche da `http://localhost:8000/metrics` (stato su `http://localhost:9090/targets`). Il "ponte" che traduce
-gli attributi di datapizza-ai per Phoenix (`chess_tutor/otel_phoenix_bridge.py`) è il file del corso (S11). Phoenix e le
+gli attributi di datapizza-ai per Phoenix (`chess_tutor/otel_phoenix_bridge.py`) è un file già pronto, usato così com'è. Phoenix e le
 metriche sono locali: nulla esce dal computer.
 
-## Valutazione (Step 1f, lezione S08)
+## Valutazione (Step 1f)
 Un **gold** di 37 domande (`evals/gold.json`: regole, aperture, tattiche, domande a due rami, fuori corpus, fuori tema, un attacco) e uno
 script che misura, con i numeri, invece di andare a intuito:
 - **routing** (il router sceglie i rami giusti?), **recall@3** e **MRR** (la fonte giusta è tra i primi 3? quanto in alto?);
@@ -108,7 +137,7 @@ python evals/run_evals.py                 # routing + retrieval (circa 1 centesi
 python evals/run_evals.py --e2e           # + risposte vere e giudice (circa 3 centesimi)
 python evals/run_evals.py --solo G01,G17  # solo alcune domande, per capire un errore (non si salva)
 ```
-Ogni run si salva in `evals/results/` e viene confrontato con l'ultimo dello stesso tipo, con la **regola A/B** del corso: una
+Ogni run si salva in `evals/results/` e viene confrontato con l'ultimo dello stesso tipo, con la **regola A/B**: una
 modifica vale se la faithfulness sale di almeno 0.03, la recall non scende di più di 0.02 e il costo resta nel budget. Su 33
 domande una differenza sotto 0.05 è **rumore**. Limiti: gold scritto da una persona sola; il giudice è lo stesso modello che
 risponde e da un run all'altro può cambiare voto; un solo giudice.
@@ -143,7 +172,7 @@ scacco, arrocco impossibile…) e legge la notazione italiana (C cavallo, A alfi
 e, come ripiego, quella inglese. Le lettere dei pezzi vanno **maiuscole** (`Cf3`): `cf3` minuscolo non è un cavallo, e il messaggio lo spiega. Funziona anche senza chiave. Lo stesso strumento è nel server MCP (`verifica_mossa`, `mosse_legali`).
 Si possono scrivere **più mosse separate da virgola** (`e4, e5, Cf3, Cc6`): si giocano in ordine, con un cursore per vederle una alla volta, e ci si ferma alla prima non legale dicendo quale. L'agente del tutor non lo usa ancora.
 
-## Server MCP (Step 2a, lezione S13)
+## Server MCP (Step 2a)
 Il tutor è anche un **server MCP**: un altro programma (un *host*: Claude Code, VS Code, Cursor, un client Python…) può usarlo
 senza riscrivere niente. L'host fa da modello; il server dà conoscenza e verifiche.
 - **tool** (un verbo): `cerca_conoscenza(ramo, domanda, k)` e `verifica_risposta(domanda, risposta, riferimento)` (più `genera_quiz` e `verifica_quiz`, sotto): esito
