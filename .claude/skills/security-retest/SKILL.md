@@ -1,6 +1,6 @@
 ---
 name: security-retest
-description: Procedura di red team e retest (lezione S15): fissa un attacco, lancialo, aggiungi barriere su passaggi diversi, rilancia lo STESSO attacco. Usala quando tocchi strumenti, prompt o guardrail.
+description: Procedura di red team e retest: fissa un attacco, lancialo, aggiungi barriere su passaggi diversi, rilancia lo STESSO attacco. Usala quando tocchi strumenti, prompt o guardrail.
 ---
 1. **Fissa l'attacco**: vettore (per esempio un documento avvelenato nel corpus o una risposta d'allievo con un ordine), bersaglio e canale
    d'uscita (un link, un segreto, una fonte inventata). Scrivilo nei test: `tests/test_sicurezza.py` (documento avvelenato, modello

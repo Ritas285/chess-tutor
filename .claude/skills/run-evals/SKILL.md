@@ -1,6 +1,6 @@
 ---
 name: run-evals
-description: Lancia le valutazioni (routing, retrieval, risposte, verifica, quiz) e le interpreta con la regola A/B del corso. Usala dopo ogni modifica a prompt, router, chunking, retrieval o giudici.
+description: Lancia le valutazioni (routing, retrieval, risposte, verifica, quiz) e le interpreta con la regola A/B del progetto. Usala dopo ogni modifica a prompt, router, chunking, retrieval o giudici.
 ---
 1. `python evals/run_evals.py` (routing e retrieval) e `python evals/run_evals.py --e2e` (risposte vere con giudice). Servono la chiave
    in `.env` e costano pochi centesimi. I risultati finiscono in `evals/results/` e vengono confrontati con l'ultimo run dello stesso tipo.

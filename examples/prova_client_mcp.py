@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Prova il server MCP di Chess Tutor COME FAREBBE UN ALTRO PROGRAMMA (un "host"): lancia il server come sottoprocesso (stdio),
-elenca tool, resource e prompt e li usa. Stesso schema di Lezione13/mcp_consume_demo.py (S13).
+elenca tool, resource e prompt e li usa.
 
     python examples/prova_client_mcp.py
 

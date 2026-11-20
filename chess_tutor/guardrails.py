@@ -106,8 +106,8 @@ def ripulisci_output(testo: str, domini_ammessi: tuple[str, ...] = ()) -> tuple[
 
 def ancora_citazioni(testo: str, fonti_recuperate: list[str]) -> tuple[str, list[str]]:
     """Toglie le citazioni a file che NON sono tra i passaggi recuperati in questo turno (fonti inventate o riprese dalla
-    memoria del modello). `fonti_recuperate` ha voci come "03_mosse_speciali.md › L'arrocco". (Idea dell'hackathon:
-    fix_citations nel codice, perché il prompt da solo non bastava.)"""
+    memoria del modello). `fonti_recuperate` ha voci come "03_mosse_speciali.md › L'arrocco". Si fa nel codice, perché il
+    prompt da solo non bastava."""
     ammessi = {f.split("›")[0].strip().lower() for f in fonti_recuperate}
     motivi: list[str] = []
 

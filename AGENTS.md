@@ -5,7 +5,7 @@ Chess Tutor: tutor di scacchi per principianti. RAG **a rami** (oggi `rules` e `
 agente datapizza-ai che cerca solo in quelli, guardrail, osservabilità (Phoenix, Prometheus, Grafana), valutazione con un gold,
 un server **MCP** (ricerca, verifica delle risposte, quiz da un documento allegato, verifica delle mosse) e un'interfaccia Streamlit.
 Framework: **datapizza-ai 0.1.0** (non cambiare framework). Lingua di utenti e documenti: **italiano**.
-Libreria fuori dal corso, voluta: `python-chess` (serve a non far inventare mosse).
+Libreria voluta: `python-chess` (serve a non far inventare mosse).
 
 ## Comandi (da eseguire prima di dire "fatto")
 ```
@@ -59,7 +59,7 @@ La chiave sta in `.env` (`OPENAI_API_KEY`). I comandi con "chiave" costano frazi
 - **Non ottimizzare "per il gold"** (Goodhart): non copiare le domande del gold nei prompt (c'è un test), non ritoccare il gold dopo
   aver visto i risultati.
 - Leggi **perché** una cosa fallisce, non solo quanto: ad esempio i motivi degli scarti del quiz, le motivazioni del giudice.
-- Le API di datapizza-ai differiscono tra slide e notebook: verifica sempre sul pacchetto installato (`pip show datapizza-ai`).
+- Le API di datapizza-ai cambiano tra le versioni: verifica sempre sul pacchetto installato (`pip show datapizza-ai`).
 - Dopo aver modificato `chess_tutor/`, **riavvia** `streamlit run`: i moduli già caricati restano in memoria.
 - **Commit**: solo il titolo, formato `stepNx: cosa fa`, niente corpo né righe di attribuzione. Chiedi sempre l'ok prima di
   committare; il push lo fa la persona, mai l'agente.

@@ -1,6 +1,6 @@
 # ♟️ Chess Tutor — tutor di scacchi per principianti
 
-Progetto finale del corso AITHO GenAI Academy (datapizza-ai 0.1.0). Un principiante fa domande su regole e aperture degli
+Progetto personale costruito con datapizza-ai 0.1.0. Un principiante fa domande su regole e aperture degli
 scacchi; un **router** capisce di cosa parla la domanda, un **agente** cerca **solo nei documenti del ramo giusto** (RAG a rami),
 risponde citando le fonti e dice "Non lo so" quando i documenti non bastano.
 

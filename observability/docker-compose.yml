@@ -1,4 +1,4 @@
-# Stack di osservabilità del Chess Tutor (lezione S11): Phoenix per i trace, Prometheus + Grafana per le metriche.
+# Stack di osservabilità del Chess Tutor: Phoenix per i trace, Prometheus + Grafana per le metriche.
 #
 #   docker compose -f observability/docker-compose.yml up -d
 #
@@ -6,7 +6,7 @@
 # Grafana   http://localhost:3000   "quanto costa e quanto è lento?": dashboard "Chess Tutor — operazioni" (senza login)
 # Prometheus http://localhost:9090  legge le metriche del tutor ogni 5 secondi da http://localhost:8000/metrics
 #
-# Serve Docker Desktop ACCESO. Lo stack è interamente locale. Le immagini sono quelle del corso (S11).
+# Serve Docker Desktop ACCESO. Lo stack è interamente locale. Le immagini sono quelle ufficiali di Phoenix, Prometheus e Grafana.
 services:
 
   phoenix:
@@ -40,7 +40,7 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_USERS_DEFAULT_THEME=light
     volumes:
-      # datasource e dashboard come FILE (S11): una dashboard fatta a click non sta nel git e non si ripristina
+      # datasource e dashboard come FILE: una dashboard fatta a click non sta nel git e non si ripristina
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:

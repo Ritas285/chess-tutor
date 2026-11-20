@@ -2,7 +2,7 @@
 # Niente statistiche d'uso inviate a Streamlit (e niente richiesta di e-mail al primo avvio).
 gatherUsageStats = false
 
-# Tema "legno" (come la seconda versione delle slide): crema e marrone in chiaro, viola scuro e legno chiaro in scuro.
+# Tema "legno" (come la presentazione): crema e marrone in chiaro, viola scuro e legno chiaro in scuro.
 # L'utente può scegliere dal menu delle impostazioni o dal pulsante nell'intestazione (vedi chess_tutor/webapp.py).
 [theme]
 baseRadius = "medium"
