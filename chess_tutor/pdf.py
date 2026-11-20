@@ -1,4 +1,4 @@
-"""Lettura dei PDF per i rami della conoscenza (Step 6: confronto md contro PDF, richiesto da Giuseppe).
+"""Lettura dei PDF per i rami della conoscenza (Step 6: confronto md contro PDF).
 
 Un Markdown dice da solo dove cominciano le sezioni (il parser ne fa un pezzo ciascuna, con il titolo davanti). Un PDF no: è
 testo spezzato in righe visive, con intestazioni su ogni pagina, numeri di pagina e, nei manuali di scacchi, diagrammi che

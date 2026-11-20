@@ -51,7 +51,7 @@ BRANCHES: dict[str, Branch] = {b.key: b for b in [
            "pedone, pezzi indifesi, come cercare una tattica e come difendersi dalle minacce dell'avversario."),
 ]}
 
-# Rami OPZIONALI con documenti PDF trovati online (Step 6, richiesta di Giuseppe: md contro PDF). I PDF non stanno nel git (diritti
+# Rami OPZIONALI con documenti PDF trovati online (Step 6, prova md contro PDF). I PDF non stanno nel git (diritti
 # non liberi, vedi README): il ramo esiste solo se RAMI_PDF=1 (nel .env o nell'ambiente) E la cartella data/<ramo>/ contiene PDF.
 # Senza, il progetto si comporta esattamente come prima (stessi rami, stesse misure, stessi test).
 RAMI_PDF: list[Branch] = [

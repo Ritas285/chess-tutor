@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Md contro PDF (Step 6, richiesta di Giuseppe): cambia qualcosa nel retrieval se i documenti sono PDF invece che Markdown?
+"""Md contro PDF (Step 6): cambia qualcosa nel retrieval se i documenti sono PDF invece che Markdown?
 
     python evals/confronta_formati.py                # le due prove, poi salva in evals/results/
     python evals/confronta_formati.py --routing      # + il router sceglie i rami giusti? (chiama il modello: pochi centesimi)

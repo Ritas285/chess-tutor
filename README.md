@@ -204,7 +204,7 @@ python evals/verifica_contenuti.py    # le mosse scritte nei documenti di data/ 
 ```
 
 ## Rami con PDF: md contro PDF (Step 6, opzionale)
-Giuseppe ha chiesto di provare alcuni rami in Markdown e altri in PDF, per vedere se cambia la capacità di ritrovare le informazioni.
+Si è fatta una prova con alcuni rami in Markdown e altri in PDF, per vedere se cambia la capacità di ritrovare le informazioni.
 I rami PDF sono **opzionali**: i PDF sono documenti trovati online con diritti non liberi, quindi **non stanno nel git** (`data/*/*.pdf` è
 ignorato) e senza di loro il progetto funziona esattamente come prima (stessi rami, stesse misure, stessi test).
 
